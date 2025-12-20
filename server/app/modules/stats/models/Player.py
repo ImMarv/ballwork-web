@@ -1,7 +1,14 @@
-from pydantic import BaseModel
 from datetime import datetime
 
-class Player(BaseModel):
+from pydantic import BaseModel
+
+
+class player(BaseModel):
+    """_summary_
+
+    Args:
+        BaseModel (_type_): _description_
+    """
     id: int
     dob: datetime
     age: int

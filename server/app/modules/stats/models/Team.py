@@ -1,7 +1,14 @@
-from pydantic import BaseModel
 from datetime import datetime
 
-class Team(BaseModel):
+from pydantic import BaseModel
+
+
+class team(BaseModel):
+    """_summary_
+
+    Args:
+        BaseModel (_type_): _description_
+    """
     id: int
     founded: datetime
     name: str
