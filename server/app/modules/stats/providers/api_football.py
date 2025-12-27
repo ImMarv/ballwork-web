@@ -1,21 +1,28 @@
+"""
+Adapter for api-football
+"""
 # check .env for api key.
 # must handle any errors or issues with the tests here.
 import os
 
 import httpx
 from dotenv import load_dotenv
-from ifootball_provider import FootballDataProvider
+from .ifootball_provider import FootballDataProvider
 
 
 class ExternalAPIError(Exception):
-    pass
+    """Exception handler for providers
+
+    Args:
+        Exception (_type_)
+    """
 
 
 class ApiFootballProvider(FootballDataProvider):
     """Base class for the Api-Football data provider
 
     Args:
-        FootballDataProvider (_type_): _description_
+        FootballDataProvider (_type_)
     """
 
     def __init__(self, api_key: str):
@@ -28,9 +35,7 @@ class ApiFootballProvider(FootballDataProvider):
         try:
             async with httpx.AsyncClient(timeout=5) as client:
                 response = await client.get(
-                    f"{self._base_url}/{path}",
-                    headers=self._headers,
-                    params=params
+                    f"{self._base_url}/{path}", headers=self._headers, params=params
                 )
                 response.raise_for_status()
                 return response.json()
@@ -52,14 +57,10 @@ class ApiFootballProvider(FootballDataProvider):
         Returns:
             JSON: JSON request
         """
-        async with httpx.AsyncClient() as client:
-            response = await client.get(
-                f"{self._base_url}/players",
-                headers=self._headers,
-                params={"id": player_id, "season": year},
-            )
-        response.raise_for_status()
-        return response.json()
+        return await self._request(
+            path="players",
+            params={"id": player_id, "season": year},
+        )
 
     async def get_team(self, team_id: int, year: str):
         """Function that gets team data from Api-Football
@@ -70,11 +71,18 @@ class ApiFootballProvider(FootballDataProvider):
         Returns:
             JSON: JSON request
         """
-        async with httpx.AsyncClient() as client:
-            response = await client.get(
-                f"{self._base_url}/teams/statistics",
-                headers=self._headers,
-                params={"team": team_id, "season": year},
+        return await self._request(
+            path="teams/statistics",
+            params={"id": team_id, "season": year},
+        )
+
+    async def search_players(self, query: str):
+        """Function that searches for a player based on a query from Api-Football
+
+        Args:
+            query (str): Lastname of the entity
+        """
+        return await self._request(
+            path="players/profiles",
+            params={"query": query}
             )
-            response.raise_for_status()
-            return response.json()

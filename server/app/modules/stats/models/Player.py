@@ -17,7 +17,7 @@ class player(BaseModel):
     season_goals: int
     season_assists: int
     season_games: int
-    shirt_number: str
+    position: str
 
 
 
