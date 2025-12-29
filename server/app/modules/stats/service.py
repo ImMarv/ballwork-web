@@ -7,6 +7,15 @@ class StatsService:
         self._provider = provider
 
     async def get_player(self, player_id: int, year: str):
+        """
+        Get Player Stats
+        
+        :param self: Description
+        :param player_id: Description
+        :type player_id: int
+        :param year: Description
+        :type year: str
+        """
         raw_player = await self._provider.get_player(
             player_id, year
             )
@@ -14,16 +23,18 @@ class StatsService:
 
         results = []
         for p in players:
-            stats = p["statistics"][0]
-
+            player_info = p.get("player", {})
+            statistics = p.get("statistics", [])
+            if not statistics:
+                continue
+            stats = statistics[0]
+            results = []
             results.append(
                 {
-                "id": p["player"]["id"],
-                "name": p["player"]["name"],
-                "season_goals": stats["statistics"]["goals"]["total"],
-                "season_assists": stats["statistics"]["goals"]["assists"],
-                "season_games": stats["statistics"]["games"]["appearences"],
-                "position": stats["statistics"]["games"]["position"],
+                    "id": player_info["id"],
+                    "name": player_info.get("name"),
+                    "season_goals": stats.get("goals", {}).get("total"),
+                    "season_assists": stats.get("goals", {}).get("assists")
             }
             )
         return results
