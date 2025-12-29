@@ -1,7 +1,13 @@
+"""
+    Service layer of the application.
+"""
 from .providers.ifootball_provider import FootballDataProvider
 
 
 class StatsService:
+    """
+    Service layer class for establishing business logic
+    """
 
     def __init__(self, provider: FootballDataProvider):
         self._provider = provider
