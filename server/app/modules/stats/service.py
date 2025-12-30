@@ -25,6 +25,8 @@ class StatsService:
         raw_player = await self._provider.get_player(
             player_id, year
             )
+        if not raw_player:
+            return []
         players = raw_player.get("response", [])
 
         results = []
@@ -34,13 +36,25 @@ class StatsService:
             if not statistics:
                 continue
             stats = statistics[0]
-            results = []
+
+            results = [] # Return results
+
             results.append(
                 {
                     "id": player_info["id"],
                     "name": player_info.get("name"),
+                    "season": year,
+                    "dob": player_info.get("birth", {}).get("date"),
+                    "photo": player_info.get("photo"),
+                    "age": player_info.get("age"),
+                    "nationality": player_info.get("nationality"),
+                    "team_id": stats.get("team", {}).get("id"),
+                    "team_name": stats.get("team", {}).get("name"),
                     "season_goals": stats.get("goals", {}).get("total"),
-                    "season_assists": stats.get("goals", {}).get("assists")
+                    "season_assists": stats.get("goals", {}).get("assists"),
+                    "games_played": stats.get("games", {}).get("appearences"),
+                    "position": stats.get("games", {}).get("position"),
+                    "number": stats.get("games", {}).get("number")
             }
             )
         return results
