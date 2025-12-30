@@ -7,6 +7,7 @@ import os
 
 import httpx
 from dotenv import load_dotenv
+
 from .ifootball_provider import FootballDataProvider
 
 
@@ -43,10 +44,10 @@ class ApiFootballProvider(FootballDataProvider):
         except httpx.TimeoutException as timeout:
             raise ExternalAPIError("API-Football timeout") from timeout
 
-        except httpx.HTTPStatusError as e:
+        except httpx.HTTPStatusError as err:
             raise ExternalAPIError(
-                f"API-Football returned {e.response.status_code}"
-            ) from e
+                f"API-Football returned {err.response.status_code}"
+            ) from err
 
     async def get_player(self, player_id: int, year: str):
         """Function that gets player data from Api-Football
@@ -57,10 +58,13 @@ class ApiFootballProvider(FootballDataProvider):
         Returns:
             JSON: JSON request
         """
-        return await self._request(
-            path="players",
-            params={"id": player_id, "season": year},
-        )
+        try:
+            return await self._request(
+                path="players",
+                params={"id": player_id, "season": year},
+            )
+        except ExternalAPIError:
+            return {}
 
     async def get_team(self, team_id: int, year: str):
         """Function that gets team data from Api-Football
