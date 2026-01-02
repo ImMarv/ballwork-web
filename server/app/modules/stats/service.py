@@ -1,6 +1,7 @@
 """
     Service layer of the application.
 """
+from .providers.api_football import ExternalAPIError
 from .providers.ifootball_provider import FootballDataProvider
 
 
@@ -22,11 +23,13 @@ class StatsService:
         :param year: Description
         :type year: str
         """
-        raw_player = await self._provider.get_player(
-            player_id, year
-            )
-        if not raw_player:
+        try:
+            raw_player = await self._provider.get_player(
+                player_id, year
+                )
+        except ExternalAPIError:
             return []
+
         players = raw_player.get("response", [])
 
         results = []
