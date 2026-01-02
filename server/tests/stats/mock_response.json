@@ -1,0 +1,99 @@
+{
+  "response": [
+    {
+      "player": {
+        "id": 276,
+        "name": "Neymar",
+        "firstname": "Neymar",
+        "lastname": "da Silva Santos Júnior",
+        "age": 33,
+        "birth": {
+          "date": "1992-02-05",
+          "place": "Mogi das Cruzes",
+          "country": "Brazil"
+        },
+        "nationality": "Brazil",
+        "height": "175",
+        "weight": "68",
+        "injured": false,
+        "photo": "https://media.api-sports.io/football/players/276.png"
+      },
+      "statistics": [
+        {
+          "team": {
+            "id": 85,
+            "name": "Paris Saint Germain",
+            "logo": "https://media.api-sports.io/football/teams/85.png"
+          },
+          "league": {
+            "id": 61,
+            "name": "Ligue 1",
+            "country": "France",
+            "logo": "https://media.api-sports.io/football/leagues/61.png",
+            "flag": "https://media.api-sports.io/flags/fr.svg",
+            "season": 2022
+          },
+          "games": {
+            "appearences": 20,
+            "lineups": 18,
+            "minutes": 1553,
+            "number": null,
+            "position": "Attacker",
+            "rating": "7.725000",
+            "captain": false
+          },
+          "substitutes": {
+            "in": 2,
+            "out": 8,
+            "bench": 2
+          },
+          "shots": {
+            "total": 30,
+            "on": 20
+          },
+          "goals": {
+            "total": 13,
+            "conceded": 0,
+            "assists": 11,
+            "saves": null
+          },
+          "passes": {
+            "total": 1187,
+            "key": 49,
+            "accuracy": 49
+          },
+          "tackles": {
+            "total": 22,
+            "blocks": 1,
+            "interceptions": 4
+          },
+          "duels": {
+            "total": 243,
+            "won": 126
+          },
+          "dribbles": {
+            "attempts": 84,
+            "success": 38,
+            "past": null
+          },
+          "fouls": {
+            "drawn": 65,
+            "committed": 25
+          },
+          "cards": {
+            "yellow": 5,
+            "yellowred": 1,
+            "red": 0
+          },
+          "penalty": {
+            "won": null,
+            "commited": null,
+            "scored": 2,
+            "missed": 0,
+            "saved": null
+          }
+        }
+      ]
+    }
+  ]
+}
