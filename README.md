@@ -9,14 +9,12 @@ Ballwork is part of a final year project comparing the constraints between monol
 The application is a simplified version of a real-world application, which should allow to build a fairly comprehensive application and allows for very good separation of concerns for the microservice implementation.
 
 ## Overview
----
 The server is built with:
 - **FastAPI** - Modern Python web framework for building APIs
 - **Pydantic** - Data validation and settings management
 - **httpx** - Async HTTP client for external API calls
 
 ## Architecture
----
 The application follows a **modulith pattern** with strict architectural rules:
 
 1. Modules shall not import from each other
@@ -61,7 +59,6 @@ server/
 ```
 
 ## Getting Started
----
 ### Prerequisites
 
 - Python 3.9+
@@ -115,7 +112,6 @@ pytest --cov=app server/tests/
 ```
 
 ## Development Guidelines
----
 ### Adding New Modules
 
 1. Create a new directory under `app/modules/<module_name>`
@@ -136,7 +132,6 @@ pytest --cov=app server/tests/
 - **External integrations as providers** - Keep them abstracted behind interfaces
 
 ## Dependencies
----
 See [requirements.txt](app/requirements.txt) for the complete list:
 - `fastapi` - Web framework
 - `httpx` - Async HTTP client
@@ -145,7 +140,6 @@ See [requirements.txt](app/requirements.txt) for the complete list:
 - `python-dotenv` - Environment variable loading
 
 ## Troubleshooting
----
 ### Import Errors
 
 If you encounter import errors when running tests:
