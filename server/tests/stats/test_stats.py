@@ -58,14 +58,14 @@ async def test_get_team_maps_data_properly():
 
     assert result == [
   {
-    "id": 1,
+    "id": 33,
     "team_name": "Manchester United",
     "team_logo": "https://media.api-sports.io/football/teams/33.png",
-    "competition_id": 1,
+    "competition_id": 39,
     "competition_name": "Premier League",
     "competition_logo": "https://media.api-sports.io/football/leagues/39.png",
     "competition_region": "England",
-    "year": 2021,
+    "year": 2022,
     "form": "LLWWWWLWDWDWLWWWWWDLWDWWLDLWWWDWLLWWWW",
     "played": 38,
     "wins": {
