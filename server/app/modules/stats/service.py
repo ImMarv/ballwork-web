@@ -86,11 +86,14 @@ class StatsService:
         
         results = []
 
+        if isinstance(teams, list):
+            teams = teams[0] if teams else {}
+
         team_info = teams.get("team", {})
         team_competition = teams.get("league", {})
-        if team_info["name"] is None and team_competition["name"] is None:
+        if team_info.get("name") is None and team_competition.get("name") is None:
             return []
-        
+
         results.append(
             {
                 "id": team_info.get("id"),
@@ -102,15 +105,14 @@ class StatsService:
                 "competition_region": team_competition.get("country"),
                 "year": team_competition.get("season"),
                 "form": teams.get("form"),
-                "wins": teams.get("fixtures, {}").get("wins", {}).get("total", {}),
-                "loses": teams.get("fixtures, {}").get("loses", {}).get("total", {}),
-                "draws": teams.get("fixtures, {}").get("draws", {}).get("total", {}),
-                "goals_for": teams.get("goals, {}").get("for", {}).get("total", {}),
-                "goals_against": teams.get("goals, {}").get("against", {}).get("total", {})
+                "played": teams.get("fixtures", {}).get("played", {}).get("total", {}),
+                "wins": teams.get("fixtures", {}).get("wins", {}),
+                "loses": teams.get("fixtures", {}).get("loses", {}),
+                "draws": teams.get("fixtures", {}).get("draws", {}),
+                "goals_for": teams.get("goals", {}).get("for", {}).get("total", {}),
+                "goals_against": teams.get("goals", {}).get("against", {}).get("total", {})
             }
         )
-        return results       
-
-
+        return results
     async def search_players(self, query: str):
         pass

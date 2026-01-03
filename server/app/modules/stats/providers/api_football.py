@@ -77,7 +77,7 @@ class ApiFootballProvider(FootballDataProvider):
         """
         return await self._request(
             path="teams/statistics",
-            params={"id": team_id, "league": competition_id, "season": year},
+            params={"team": team_id, "league": competition_id, "season": year},
         )
 
     async def search_players(self, query: str):
