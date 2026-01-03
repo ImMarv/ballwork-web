@@ -42,7 +42,7 @@ class ApiFootballProvider(FootballDataProvider):
                 return response.json()
 
         except httpx.TimeoutException as timeout:
-            raise ExternalAPIError("API-Football timeout") from timeout
+            raise ExternalAPIError("API-Football timed out") from timeout
 
         except httpx.HTTPStatusError as err:
             raise ExternalAPIError(
@@ -77,7 +77,7 @@ class ApiFootballProvider(FootballDataProvider):
         """
         return await self._request(
             path="teams/statistics",
-            params={"id": team_id, "season": year},
+            params={"id": team_id, "league": competition_id, "season": year},
         )
 
     async def search_players(self, query: str):
