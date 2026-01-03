@@ -31,7 +31,7 @@ async def test_get_player_maps_data_properly():
   {
     "id": 276,
     "name": "Neymar",
-    "season": "2022",
+    "season": 2022,
     "dob": "1992-02-05",
     "photo": "https://media.api-sports.io/football/players/276.png",
     "age": 33,
