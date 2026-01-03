@@ -46,9 +46,7 @@ class StatsService:
                 {
                     "id": player_info.get("id"),
                     "name": player_info.get("name"),
-                    "season": stats.get("league", {}).get("season") 
-                    if int(year) == stats.get("league", {}).get("season")
-                    else int(year),
+                    "season": stats.get("league", {}).get("season"),
                     "dob": player_info.get("birth", {}).get("date"),
                     "photo": player_info.get("photo"),
                     "age": player_info.get("age"),
@@ -80,10 +78,10 @@ class StatsService:
                 team_id, competition_id, year
             )
         except ExternalAPIError:
-            return []
+            return []     
         
         teams = raw_team.get("response", {})
-        
+
         results = []
 
         if isinstance(teams, list):
