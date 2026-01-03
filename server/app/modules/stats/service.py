@@ -62,7 +62,7 @@ class StatsService:
             )
         return results
 
-    async def get_team(self, team_id: int):
+    async def get_team(self, team_id: int, competition_id: int, year: str):
         pass
 
     async def search_players(self, query: str):

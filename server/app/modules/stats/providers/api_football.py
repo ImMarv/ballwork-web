@@ -66,7 +66,7 @@ class ApiFootballProvider(FootballDataProvider):
         except ExternalAPIError:
             return {}
 
-    async def get_team(self, team_id: int, year: str):
+    async def get_team(self, team_id: int, competition_id: int, year: str):
         """Function that gets team data from Api-Football
 
         Args:
