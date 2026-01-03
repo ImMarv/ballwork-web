@@ -1,6 +1,7 @@
 """
-    Service layer of the application.
+Service layer of the application.
 """
+
 from .providers.api_football import ExternalAPIError
 from .providers.ifootball_provider import FootballDataProvider
 
@@ -24,9 +25,7 @@ class StatsService:
             json: Mapped response
         """
         try:
-            raw_player = await self._provider.get_player(
-                player_id, year
-                )
+            raw_player = await self._provider.get_player(player_id, year)
         except ExternalAPIError:
             return []
 
@@ -40,7 +39,7 @@ class StatsService:
                 continue
             stats = statistics[0]
 
-            results = [] # Return results
+            results = []  # Return results
 
             results.append(
                 {
@@ -57,8 +56,8 @@ class StatsService:
                     "season_assists": stats.get("goals", {}).get("assists"),
                     "games_played": stats.get("games", {}).get("appearences"),
                     "position": stats.get("games", {}).get("position"),
-                    "number": stats.get("games", {}).get("number")
-            }
+                    "number": stats.get("games", {}).get("number"),
+                }
             )
         return results
 
@@ -74,12 +73,10 @@ class StatsService:
         """
         # using pythonic models might be more ideal here, however we'll do this for the time being.
         try:
-            raw_team = await self._provider.get_team(
-                team_id, competition_id, year
-            )
+            raw_team = await self._provider.get_team(team_id, competition_id, year)
         except ExternalAPIError:
-            return []     
-        
+            return []
+
         teams = raw_team.get("response", {})
 
         results = []
@@ -108,9 +105,12 @@ class StatsService:
                 "loses": teams.get("fixtures", {}).get("loses", {}),
                 "draws": teams.get("fixtures", {}).get("draws", {}),
                 "goals_for": teams.get("goals", {}).get("for", {}).get("total", {}),
-                "goals_against": teams.get("goals", {}).get("against", {}).get("total", {})
+                "goals_against": teams.get("goals", {})
+                .get("against", {})
+                .get("total", {}),
             }
         )
         return results
+
     async def search_players(self, query: str):
         pass
