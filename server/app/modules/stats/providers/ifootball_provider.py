@@ -1,4 +1,5 @@
 """Module providing abstract methods"""
+
 from abc import ABC, abstractmethod
 from typing import Any, Mapping
 
@@ -7,7 +8,7 @@ class FootballDataProvider(ABC):
     """Interface for football data providers
 
     Args:
-        ABC (_type_): _description_
+        ABC (_type_): Abstract Base Class
     """
 
     @abstractmethod
@@ -15,7 +16,9 @@ class FootballDataProvider(ABC):
         pass
 
     @abstractmethod
-    async def get_team(self, team_id: int, year: str) -> Mapping[str, Any]:
+    async def get_team(
+        self, team_id: int, competition_id: int, year: str
+    ) -> Mapping[str, Any]:
         pass
 
     @abstractmethod

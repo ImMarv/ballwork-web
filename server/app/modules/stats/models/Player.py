@@ -9,6 +9,7 @@ class player(BaseModel):
     Args:
         BaseModel (_type_): _description_
     """
+
     id: int
     dob: datetime
     age: int

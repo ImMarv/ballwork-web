@@ -1,6 +1,7 @@
 """
 Adapter for api-football
 """
+
 # check .env for api key.
 # must handle any errors or issues with the tests here.
 import os
@@ -42,7 +43,7 @@ class ApiFootballProvider(FootballDataProvider):
                 return response.json()
 
         except httpx.TimeoutException as timeout:
-            raise ExternalAPIError("API-Football timeout") from timeout
+            raise ExternalAPIError("API-Football timed out") from timeout
 
         except httpx.HTTPStatusError as err:
             raise ExternalAPIError(
@@ -66,7 +67,7 @@ class ApiFootballProvider(FootballDataProvider):
         except ExternalAPIError:
             return {}
 
-    async def get_team(self, team_id: int, year: str):
+    async def get_team(self, team_id: int, competition_id: int, year: str):
         """Function that gets team data from Api-Football
 
         Args:
@@ -77,7 +78,7 @@ class ApiFootballProvider(FootballDataProvider):
         """
         return await self._request(
             path="teams/statistics",
-            params={"id": team_id, "season": year},
+            params={"team": team_id, "league": competition_id, "season": year},
         )
 
     async def search_players(self, query: str):
@@ -86,7 +87,4 @@ class ApiFootballProvider(FootballDataProvider):
         Args:
             query (str): Lastname of the entity
         """
-        return await self._request(
-            path="players/profiles",
-            params={"query": query}
-            )
+        return await self._request(path="players/profiles", params={"query": query})
