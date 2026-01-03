@@ -2,58 +2,6 @@
 
 A FastAPI-based backend for football (soccer) statistics tracking and analysis. This application uses a modular architecture to fetch, manage, and serve football player and team statistics from external APIs.
 
-## Overview
-
-The server is built with:
-- **FastAPI** - Modern Python web framework for building APIs
-- **Pydantic** - Data validation and settings management
-- **httpx** - Async HTTP client for external API calls
-
-## Architecture
-
-The application follows a **modulith pattern** with strict architectural rules:
-
-1. Modules shall not import from each other
-2. The API layer shall not contain any business logic
-3. Services shall not know about FastAPI
-4. Repositories shall be the only DB access per module
-5. Shared is read only
-
-### Project Structure
-
-```
-server/
-├── app/
-│   ├── core/
-│   │   └── settings.py          # Configuration and environment variables
-│   ├── modules/
-│   │   ├── stats/               # Statistics module
-│   │   │   ├── api.py          # FastAPI route handlers
-│   │   │   ├── service.py       # Business logic
-│   │   │   ├── repository.py    # Data access layer
-│   │   │   ├── deps.py          # Dependencies
-│   │   │   ├── models/          # Data models
-│   │   │   │   ├── Player.py
-│   │   │   │   └── Team.py
-│   │   │   └── providers/       # External API integrations
-│   │   │       ├── api_football.py
-│   │   │       └── ifootball_provider.py
-│   │   ├── digest/              # Digest module
-│   │   └── users/               # Users module
-│   ├── shared/                  # Shared utilities (read-only)
-│   ├── main.py                  # Application entry point
-│   ├── logging.py               # Logging configuration
-│   └── requirements.txt          # Python dependencies
-├── tests/
-│   ├── stats/
-│   │   ├── test_stats.py       # Stats module tests
-│   │   ├── mock_provider.py    # Mock provider for testing
-│   │   └── mock_response.json  # Sample API responses
-│   ├── digest/
-│   └── users/
-└── .env                         # Environment variables (local)
-```
-
 ## Getting Started
 
 ### Prerequisites
