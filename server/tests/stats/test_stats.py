@@ -1,5 +1,5 @@
+"""Tests for the stats module"""
 import pytest
-import pytest_asyncio
 from app.modules.stats.service import StatsService
 
 from .mock_provider import MockFailingProvider, MockWorkingProvider
@@ -20,7 +20,7 @@ async def test_get_player_handles_external_api_error():
 @pytest.mark.asyncio
 async def test_get_player_maps_data_properly():
     """
-    Passes if the data is correctly mapped.
+    Passes if the raw data is correctly mapped.
     """
     _provider = MockWorkingProvider()
     _service = StatsService(provider=_provider)
@@ -45,3 +45,15 @@ async def test_get_player_maps_data_properly():
     "number": None
   }
 ]
+    
+@pytest.mark.asyncio
+async def test_get_team_maps_data_properly():
+    """
+    Passes if the raw data is correctly mapped.
+    """
+    _provider = MockWorkingProvider()
+    _service = StatsService(provider=_provider)
+
+    result = await _service.get_team(team_id=1, competition_id=1, year="2021")
+
+    assert result == []

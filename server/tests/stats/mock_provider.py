@@ -10,12 +10,12 @@ from app.modules.stats.providers.ifootball_provider import FootballDataProvider
 
 class BaseMockProvider(FootballDataProvider):
     """
-    The base provider mock class for the stats of a player
+    The base mock provider class for the stats of a player
     """
     async def get_player(self, player_id: int, year: str):
         raise NotImplementedError
 
-    async def get_team(self, team_id: int, year: str):
+    async def get_team(self, team_id: int, competition_id: int, year: str):
         raise NotImplementedError
 
     async def search_players(self, query: str):
@@ -45,5 +45,8 @@ class MockWorkingProvider(BaseMockProvider):
         """
         Returns mock details of a player
         """
-        mock_file = Path(__file__).parent / "mock_response.json"
+        mock_file = Path(__file__).parent / "mock_player_response.json"
         return json.loads(mock_file.read_text())
+    async def get_team(self, team_id: int, competition_id: int, year: str):
+        mock_file = Path(__file__).parent / "mock_team_response.json"
+        return json.loads((mock_file).read_text())
