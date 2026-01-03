@@ -10,7 +10,9 @@ app = FastAPI()
 provider = ApiFootballProvider(api_key=settings.API_FOOTBALL_KEY)
 service = StatsService(provider=provider)
 
+
 def get_stats_service() -> StatsService:
     return stats_service
+
 
 app.include_router(stats_router, prefix="/stats")

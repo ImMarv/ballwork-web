@@ -9,6 +9,7 @@ class team(BaseModel):
     Args:
         BaseModel (_type_): _description_
     """
+
     id: int
     founded: datetime
     name: str
@@ -17,10 +18,3 @@ class team(BaseModel):
     goals_for: int
     goals_against: int
     position: str
-
-
-
-
-
-
-

@@ -1,6 +1,7 @@
 """
 Docstring for server.app.modules.stats.api
 """
+
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
@@ -9,13 +10,15 @@ from .deps import get_stats_service
 from .service import StatsService
 
 router = APIRouter()
+
+
 async def params(
     player_id: int | None = None,
     team_id: int | None = None,
     year: str | None = None,
     competition_id: int | None = None,
-    service: StatsService = Depends(get_stats_service)  # noqa: B008
-    ):
+    service: StatsService = Depends(get_stats_service),  # noqa: B008
+):
     """Common Parameters for the API commands
 
     Args:
@@ -35,6 +38,7 @@ async def params(
         "service": service,
     }
 
+
 @router.get("/player/{player_id}")
 async def get_player(commons: Annotated[dict, Depends(params)]):
     """Gets player data from API-Football
@@ -43,12 +47,13 @@ async def get_player(commons: Annotated[dict, Depends(params)]):
         commons (Annotated[dict, Depends): Value storing request parameters
 
     Returns:
-        Raw JSON data of player 
+        Raw JSON data of player
     """
     return await commons["service"].get_player(
         commons["player_id"],
         commons["year"],
     )
+
 
 @router.get("/team/{team_id}")
 async def get_team(commons: Annotated[dict, Depends(params)]):
@@ -61,10 +66,9 @@ async def get_team(commons: Annotated[dict, Depends(params)]):
         Raw JSON data of team
     """
     return await commons["service"].get_team(
-        commons["team_id"],
-        commons["competition_id"],
-        commons["year"]
+        commons["team_id"], commons["competition_id"], commons["year"]
     )
+
 
 @router.get("/search")
 async def search_players(query: str):

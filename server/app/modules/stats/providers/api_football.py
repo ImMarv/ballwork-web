@@ -1,6 +1,7 @@
 """
 Adapter for api-football
 """
+
 # check .env for api key.
 # must handle any errors or issues with the tests here.
 import os
@@ -86,7 +87,4 @@ class ApiFootballProvider(FootballDataProvider):
         Args:
             query (str): Lastname of the entity
         """
-        return await self._request(
-            path="players/profiles",
-            params={"query": query}
-            )
+        return await self._request(path="players/profiles", params={"query": query})
