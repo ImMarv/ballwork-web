@@ -10,7 +10,8 @@ from .service import StatsService
 
 router = APIRouter()
 async def params(
-    player_id: int,
+    player_id: int | None = None,
+    team_id: int | None = None,
     year: str | None = None,
     competition_id: int | None = None,
     service: StatsService = Depends(get_stats_service)  # noqa: B008
@@ -27,7 +28,8 @@ async def params(
         dict: A dictionary with the request values.
     """
     return {
-        "id": player_id,
+        "player_id": player_id,
+        "team_id": team_id,
         "year": year,
         "competition_id": competition_id,
         "service": service,
@@ -44,7 +46,7 @@ async def get_player(commons: Annotated[dict, Depends(params)]):
         Raw JSON data of player 
     """
     return await commons["service"].get_player(
-        commons["id"],
+        commons["player_id"],
         commons["year"],
     )
 
@@ -59,7 +61,7 @@ async def get_team(commons: Annotated[dict, Depends(params)]):
         Raw JSON data of team
     """
     return await commons["service"].get_team(
-        commons["id"],
+        commons["team_id"],
         commons["competition_id"],
         commons["year"]
     )
