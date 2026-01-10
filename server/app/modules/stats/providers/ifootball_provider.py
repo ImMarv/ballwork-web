@@ -27,11 +27,11 @@ class FootballDataProvider(ABC):
 
     @abstractmethod
     async def get_competition(
-            self, competition_id: int, competition_name: str, type: enumerate, query: str) -> Mapping[str, Any]:
+            self, competition_id: int) -> Mapping[str, Any]:
         pass
 
     @abstractmethod
     async def get_country(
-        self, code: str, query: str
+        self, country_code: str
     ) -> Mapping[str, Any]:
         pass
