@@ -26,6 +26,11 @@ class BaseMockProvider(FootballDataProvider):
     async def search_teams(self, query: str):
         raise NotImplementedError
 
+    async def get_competition(self, competition_id: int):
+        raise NotImplementedError
+
+    async def get_country(self, country_code: str):
+        raise NotImplementedError
 
 class MockFailingProvider(BaseMockProvider):
     """
@@ -59,3 +64,17 @@ class MockWorkingProvider(BaseMockProvider):
     async def get_team(self, team_id: int, competition_id: int, year: str):
         mock_file = Path(__file__).parent / "mock_team_response.json"
         return json.loads((mock_file).read_text())
+    
+    async def get_competition(self, competition_id: int):
+        """
+        Returns mock details of a competition
+        """
+        mock_file = Path(__file__).parent / "mock_competition_response.json"
+        return json.loads(mock_file.read_text())
+
+    async def get_country(self, country_code: str):
+        """
+        Returns mock details of a country
+        """
+        mock_file = Path(__file__).parent / "mock_country_response.json"
+        return json.loads(mock_file.read_text())
