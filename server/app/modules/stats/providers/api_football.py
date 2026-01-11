@@ -88,7 +88,7 @@ class ApiFootballProvider(FootballDataProvider):
             query (str): Lastname of the entity
         """
         return await self._request(path="players/profiles", params={"query": query})
-    
+
     async def get_competition(self, competition_id: int):
         """Function that retrieves the league required from API-Football
 
@@ -98,12 +98,8 @@ class ApiFootballProvider(FootballDataProvider):
         Returns:
             JSON: JSON Request
         """
-        return await self._request(
-            path= "leagues",
-            params={
-                "id": competition_id
-                }
-        )
+        return await self._request(path="leagues", params={"id": competition_id})
+
     async def get_country(self, country_code: str):
         """Function that retrieves the country from API-Football
 
@@ -113,7 +109,4 @@ class ApiFootballProvider(FootballDataProvider):
         Returns:
             JSON: JSON request
         """
-        return await self._request(
-            path= "countries",
-            params={"code": country_code}
-        )
+        return await self._request(path="countries", params={"code": country_code})

@@ -79,6 +79,7 @@ async def test_get_team_maps_data_properly():
         }
     ]
 
+
 @pytest.mark.asyncio
 async def test_get_competition_maps_data_properly():
     """

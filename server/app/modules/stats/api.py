@@ -76,10 +76,11 @@ async def get_team(commons: Annotated[dict, Depends(params)]):
 async def search_players(query: str):
     return {"team_id": query}
 
+
 @router.get("/competition")
 async def get_competition(commons: Annotated[dict, Depends(params)]):
-    return await commons["service"].get_competition(
-        commons["competition_id"])
+    return await commons["service"].get_competition(commons["competition_id"])
+
 
 @router.get("/country")
 async def get_country(commons: Annotated[dict, Depends(params)]):

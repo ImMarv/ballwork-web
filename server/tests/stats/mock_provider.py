@@ -32,6 +32,7 @@ class BaseMockProvider(FootballDataProvider):
     async def get_country(self, country_code: str):
         raise NotImplementedError
 
+
 class MockFailingProvider(BaseMockProvider):
     """
     A failing mock provider. Meant to test various external issues only
@@ -64,7 +65,7 @@ class MockWorkingProvider(BaseMockProvider):
     async def get_team(self, team_id: int, competition_id: int, year: str):
         mock_file = Path(__file__).parent / "mock_team_response.json"
         return json.loads((mock_file).read_text())
-    
+
     async def get_competition(self, competition_id: int):
         """
         Returns mock details of a competition
