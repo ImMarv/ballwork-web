@@ -78,3 +78,44 @@ async def test_get_team_maps_data_properly():
             "goals_against": {"home": 10, "away": 33, "total": 43},
         }
     ]
+
+
+@pytest.mark.asyncio
+async def test_get_competition_maps_data_properly():
+    """
+    Passes if the raw data is correctly mapped.
+    """
+    _provider = MockWorkingProvider()
+    _service = StatsService(provider=_provider)
+
+    result = await _service.get_competition(competition_id=39)
+
+    assert result == [
+        {
+            "competition_id": 39,
+            "competition_name": "Premier League",
+            "competition_logo": "https://media.api-sports.io/football/leagues/2.png",
+            "competition_country_code": "GB",
+            "competition_country_name": "England",
+            "competition_country_logo": "https://media.api-sports.io/flags/gb.svg",
+        }
+    ]
+
+
+@pytest.mark.asyncio
+async def test_get_country_maps_data_properly():
+    """
+    Passes if the raw data is correctly mapped.
+    """
+    _provider = MockWorkingProvider()
+    _service = StatsService(provider=_provider)
+
+    result = await _service.get_country(country_code="BR")
+
+    assert result == [
+        {
+            "country_code": "GB",
+            "country_name": "England",
+            "country_logo": "https://media.api-sports.io/flags/gb.svg",
+        }
+    ]

@@ -114,3 +114,49 @@ class StatsService:
 
     async def search_players(self, query: str):
         pass
+
+    async def get_competition(self, competition_id: int):
+        try:
+            raw_competition = await self._provider.get_competition(competition_id)
+        except ExternalAPIError:
+            return []
+
+        competitions = raw_competition.get("response", [])
+        results = []
+
+        for c in competitions:
+            league_info = c.get("league", {})
+            country_info = c.get("country", {})
+            if not league_info or not country_info:
+                continue
+            results.append(
+                {
+                    "competition_id": league_info.get("id"),
+                    "competition_name": league_info.get("name"),
+                    "competition_logo": league_info.get("logo"),
+                    "competition_country_code": country_info.get("code"),
+                    "competition_country_name": country_info.get("name"),
+                    "competition_country_logo": country_info.get("flag"),
+                }
+            )
+        return results
+
+    async def get_country(self, country_code: str):
+        try:
+            raw_country = await self._provider.get_country(country_code.capitalize())
+        except ExternalAPIError:
+            return []
+
+        country = raw_country.get("response", [])
+        results = []
+
+        if isinstance(country, list):
+            country = country[0] if country else {}
+        results.append(
+            {
+                "country_code": country.get("code"),
+                "country_name": country.get("name"),
+                "country_logo": country.get("flag"),
+            }
+        )
+        return results

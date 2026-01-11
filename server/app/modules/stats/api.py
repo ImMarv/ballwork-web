@@ -17,6 +17,7 @@ async def params(
     team_id: int | None = None,
     year: str | None = None,
     competition_id: int | None = None,
+    country_code: str | None = None,
     service: StatsService = Depends(get_stats_service),  # noqa: B008
 ):
     """Common Parameters for the API commands
@@ -35,6 +36,7 @@ async def params(
         "team_id": team_id,
         "year": year,
         "competition_id": competition_id,
+        "country_code": country_code,
         "service": service,
     }
 
@@ -73,3 +75,13 @@ async def get_team(commons: Annotated[dict, Depends(params)]):
 @router.get("/search")
 async def search_players(query: str):
     return {"team_id": query}
+
+
+@router.get("/competition")
+async def get_competition(commons: Annotated[dict, Depends(params)]):
+    return await commons["service"].get_competition(commons["competition_id"])
+
+
+@router.get("/country")
+async def get_country(commons: Annotated[dict, Depends(params)]):
+    return await commons["service"].get_country(commons["country_code"])
