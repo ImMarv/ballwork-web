@@ -8,6 +8,7 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     API_FOOTBALL_KEY: str = Field(...)
+    DATABASE_URL: str = Field(...)
 
     model_config = {
         "env_file": ".env",
