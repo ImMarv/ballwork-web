@@ -1,9 +1,11 @@
 """This is where all the database models are.
 """
-from datetime import datetime
+from __future__ import annotations
+
+from datetime import date
 from typing import List, Optional
 
-from sqlalchemy import DateTime, ForeignKey, Integer, String
+from sqlalchemy import DateTime, ForeignKey, Integer, String, Date, Enum
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
@@ -12,66 +14,69 @@ class Base(DeclarativeBase):
 
 class Player(Base):
     __tablename__ = "player"
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
-    external_id: Mapped[int] = mapped_column()
+    id: Mapped[int] = mapped_column(primary_key=True)
+    external_id: Mapped[int] = mapped_column(unique=True)
     name: Mapped[str] = mapped_column(String(64))
-    dob: Mapped[datetime] = mapped_column(DateTime(timezone=True))
-    nationality: Mapped[str] = mapped_column(String(64))
-    photo: Mapped[str] = mapped_column(String(128))
-    position: Mapped[str] = mapped_column(String(12))
+    dob: Mapped[date] = mapped_column(Date)
+    nationality: Mapped[Country] = mapped_column(ForeignKey("country.id"))
+    image_url: Mapped[str] = mapped_column(String(128))
+    position: Mapped[enumerate] = mapped_column(Enum)
 
     # Relationships
-    player_seasons: Mapped[List["PlayerSeason"]] = relationship(back_populates="player")
+    player_seasons: Mapped[List["PlayerSeason"]] = relationship(
+        back_populates= "player", cascade="all, delete-orphan"
+    )
 
 class Team(Base):
     __tablename__ = "team"
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
-    external_id: Mapped[int] = mapped_column()
+    id: Mapped[int] = mapped_column(primary_key=True)
+    external_id: Mapped[int] = mapped_column(unique=True)
     name: Mapped[str] = mapped_column(String(64))
-    logo: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
+    image_url: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
 
     # Relationships
-    team_seasons: Mapped[List["TeamSeason"]] = relationship(back_populates="team")
+    team_seasons: Mapped[List["TeamSeason"]] = relationship(back_populates="team", cascade="all, delete-orphan")
 
 class Competition(Base):
     __tablename__ = "competition"
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
-    external_id: Mapped[int] = mapped_column()
+    id: Mapped[int] = mapped_column(primary_key=True)
+    external_id: Mapped[int] = mapped_column(unique=True)
     name: Mapped[str] = mapped_column(String(64))
-    logo: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
+    image_url: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
     country_id: Mapped[int] = mapped_column(ForeignKey("country.id"))
 
     # Relationships
     country: Mapped["Country"] = relationship(back_populates="competitions")
-    competition_seasons: Mapped[List["CompetitionSeason"]] = relationship(back_populates="competition")
+    competition_seasons: Mapped[List["CompetitionSeason"]] = relationship(back_populates="competition", cascade="all, delete-orphan")
 
 class Country(Base):
     __tablename__ = "country"
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
-    country_id: Mapped[int] = mapped_column()
+    id: Mapped[int] = mapped_column(primary_key=True)
+    country_code: Mapped[str] = mapped_column(unique=True)
     name: Mapped[str] = mapped_column(String(64))
-    logo: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
+    image_url: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
 
     # Relationships
     competitions: Mapped[List["Competition"]] = relationship(back_populates="country")
 
 class PlayerSeason(Base):
     __tablename__ = "player_season"
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
     player_id: Mapped[int] = mapped_column(ForeignKey("player.id"))
-    team_season_id: Mapped[int] = mapped_column(ForeignKey("team_season.team_season_id"))
+    competition_season_id: Mapped[int] = mapped_column(ForeignKey("competition_season.id")) # this shouldn't be here (strictly on 3NF rules) however it will stay here for the time being.
+    team_season_id: Mapped[int] = mapped_column(ForeignKey("team_season.id"))
     appearances: Mapped[int] = mapped_column(Integer, default=0)
     goals: Mapped[int] = mapped_column(Integer, default=0)
     assists: Mapped[int] = mapped_column(Integer, default=0)
     shirt_number: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
 
     # Relationships
-    player: Mapped["Player"] = relationship()
+    player: Mapped["Player"] = relationship(back_populates="player_seasons")
     team_season: Mapped["TeamSeason"] = relationship(back_populates="player_seasons")
 
 class TeamSeason(Base):
     __tablename__ = "team_season"
-    team_season_id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
     team_id: Mapped[int] = mapped_column(ForeignKey("team.id"))
     competition_season_id: Mapped[int] = mapped_column(ForeignKey("competition_season.id"))
     played: Mapped[int] = mapped_column(Integer, default=0)
@@ -93,9 +98,9 @@ class TeamSeason(Base):
 
 class CompetitionSeason(Base):
     __tablename__ = "competition_season"
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
     competition_id: Mapped[int] = mapped_column(ForeignKey("competition.id"))
-    season_year: Mapped[int] = mapped_column(Integer)
+    season_year: Mapped[int] = mapped_column(Integer, unique=True)
 
     # Relationships
     competition: Mapped["Competition"] = relationship(back_populates="competition_seasons")
