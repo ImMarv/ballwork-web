@@ -143,7 +143,8 @@ class StatsService:
 
     async def get_country(self, country_code: str):
         try:
-            raw_country = await self._provider.get_country(country_code.capitalize())
+            raw_country = await self._provider.get_country(country_code.
+            capitalize())
         except ExternalAPIError:
             return []
 
