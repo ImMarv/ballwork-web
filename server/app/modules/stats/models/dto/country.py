@@ -7,6 +7,7 @@ class Country(BaseModel):
     Args:
         BaseModel (_type_): Country
     """
+
     code: int
     name: str
     nationality: str

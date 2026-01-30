@@ -7,6 +7,7 @@ class HomeAway(BaseModel):
     Args:
         BaseModel (_type_): HomeAway
     """
+
     home: int
     away: int
     total: int
