@@ -5,15 +5,10 @@ from __future__ import annotations
 from datetime import date
 from typing import List, Optional
 
-from sqlalchemy import DateTime, ForeignKey, Integer, String, Date, Enum
+from sqlalchemy import Date, DateTime, Enum, ForeignKey, Integer, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
-
-class Base(DeclarativeBase):
-    pass
-
-
-from datetime import date
+from server.app.db import Base
 
 
 class Player(Base):
@@ -22,10 +17,10 @@ class Player(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     external_id: Mapped[int] = mapped_column(unique=True)
     name: Mapped[str] = mapped_column(String(64))
-    date_of_birth: Mapped[date | None]
+    date_of_birth: Mapped[date | None] = mapped_column(Date)
     nationality: Mapped[str | None] = mapped_column(String(64))
-    photo_url: Mapped[str | None] = mapped_column(String(128))
-    position: Mapped[str | None] = mapped_column(String(32))
+    photo_url: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    position: Mapped[str | None] = mapped_column(String(32), nullable=True)
 
     player_seasons: Mapped[list["PlayerSeason"]] = relationship(back_populates="player")
 
