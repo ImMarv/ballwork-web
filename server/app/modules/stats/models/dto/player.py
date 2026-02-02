@@ -1,6 +1,5 @@
 from datetime import datetime
 
-from country import Country
 from pydantic import BaseModel
 
 
@@ -14,11 +13,12 @@ class Player(BaseModel):
     id: int
     season: int
     name: str
+    photo: str | None = None
     dob: datetime
     age: int
     position: str
-    nationality: Country
-    goals: int
-    assists: int
-    games_played: int
-    shirt_number: int
+    nationality: str
+    goals: int | None = None
+    assists: int | None = None
+    games_played: int | None = None
+    shirt_number: int | None = None

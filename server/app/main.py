@@ -1,5 +1,6 @@
 from contextlib import asynccontextmanager
 
+import uvicorn
 from fastapi import FastAPI
 
 from app.core.settings import settings
@@ -13,7 +14,7 @@ service = StatsService(provider=provider)
 
 
 def get_stats_service() -> StatsService:
-    return stats_service
+    return service
 
 @asynccontextmanager
 async def lifespan(app:FastAPI):
@@ -21,6 +22,10 @@ async def lifespan(app:FastAPI):
     yield
     engine.dispose()
 
+
 app = FastAPI(lifespan=lifespan)
 
 app.include_router(stats_router, prefix="/stats")
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)

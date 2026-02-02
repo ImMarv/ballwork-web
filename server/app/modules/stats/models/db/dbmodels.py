@@ -15,9 +15,9 @@ class Player(Base):
     __tablename__ = "player"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    external_id: Mapped[int] = mapped_column(unique=True)
+    external_id: Mapped[int] = mapped_column(unique=True, index=True)
     name: Mapped[str] = mapped_column(String(64))
-    date_of_birth: Mapped[date | None] = mapped_column(Date)
+    date_of_birth: Mapped[date | None] = mapped_column(Date, nullable=True)
     nationality: Mapped[str | None] = mapped_column(String(64))
     photo_url: Mapped[str | None] = mapped_column(String(128), nullable=True)
     position: Mapped[str | None] = mapped_column(String(32), nullable=True)
@@ -29,7 +29,7 @@ class Team(Base):
     __tablename__ = "team"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    external_id: Mapped[int] = mapped_column(unique=True)
+    external_id: Mapped[int] = mapped_column(unique=True, index=True)
     name: Mapped[str] = mapped_column(String(64))
     logo_url: Mapped[str | None] = mapped_column(String(128), nullable=True)
 
@@ -40,7 +40,7 @@ class Competition(Base):
     __tablename__ = "competition"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    external_id: Mapped[int] = mapped_column(unique=True)
+    external_id: Mapped[int] = mapped_column(unique=True, index=True)
     name: Mapped[str] = mapped_column(String(64))
     logo_url: Mapped[str | None] = mapped_column(String(128), nullable=True)
 
@@ -77,7 +77,7 @@ class PlayerSeason(Base):
     appearances: Mapped[int] = mapped_column(Integer, default=0)
     goals: Mapped[int] = mapped_column(Integer, default=0)
     assists: Mapped[int] = mapped_column(Integer, default=0)
-    shirt_number: Mapped[int | None]
+    shirt_number: Mapped[int | None] = mapped_column(Integer, nullable=True)
 
     player: Mapped["Player"] = relationship(back_populates="player_seasons")
     team: Mapped["Team"] = relationship(back_populates="player_seasons")

@@ -8,6 +8,6 @@ class Country(BaseModel):
         BaseModel (_type_): Country
     """
 
-    code: int
+    code: str
     name: str
-    nationality: str
+    logo: str | None = None

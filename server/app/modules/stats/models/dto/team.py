@@ -1,8 +1,9 @@
-from datetime import datetime
+from datetime import date
 
-from country import Country
-from home_away import HomeAway
 from pydantic import BaseModel
+
+from .competition import Competition
+from .home_away import HomeAway
 
 
 class Team(BaseModel):
@@ -13,14 +14,11 @@ class Team(BaseModel):
     """
 
     id: int
-    founded: datetime
     name: str
-    country: Country
-    league: str
-    goals_for: int
-    goals_against: int
-    table_position: str
+    competition: Competition
+    table_position: int | None = None
+    goals_for: HomeAway
+    goals_against: HomeAway
     wins: HomeAway
     loses: HomeAway
     draws: HomeAway
-    goals: HomeAway

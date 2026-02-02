@@ -8,6 +8,6 @@ class HomeAway(BaseModel):
         BaseModel (_type_): HomeAway
     """
 
-    home: int
-    away: int
-    total: int
+    home: int | None = None
+    away: int | None = None
+    total: int | None = None
