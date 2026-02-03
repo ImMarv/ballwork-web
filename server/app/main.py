@@ -16,8 +16,9 @@ service = StatsService(provider=provider)
 def get_stats_service() -> StatsService:
     return service
 
+
 @asynccontextmanager
-async def lifespan(app:FastAPI):
+async def lifespan(app: FastAPI):
     create_db_and_tables()
     yield
     engine.dispose()
