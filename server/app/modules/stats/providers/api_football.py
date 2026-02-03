@@ -9,15 +9,29 @@ import os
 import httpx
 from dotenv import load_dotenv
 
+from ..mappers.mappers import map_errors
+from ..models.dto.api_error import APIError
 from .ifootball_provider import FootballDataProvider
 
 
 class ExternalAPIError(Exception):
-    """Exception handler for providers
+    def __init__(
+        self, errors: list[APIError] | None = None, message: str | None = None
+    ):
+        self.errors = errors or []
+        self.message = message or "External API error"
+        super().__init__(self.__str__())
 
-    Args:
-        Exception (_type_)
-    """
+    def __str__(self) -> str:
+        if self.errors:
+            return "; ".join(e.message for e in self.errors)
+        return self.message
+
+
+class ProviderError(Exception):
+    """Technical failure when calling external provider."""
+
+    pass
 
 
 class ApiFootballProvider(FootballDataProvider):
@@ -37,17 +51,27 @@ class ApiFootballProvider(FootballDataProvider):
         try:
             async with httpx.AsyncClient(timeout=5) as client:
                 response = await client.get(
-                    f"{self._base_url}/{path}", headers=self._headers, params=params
+                    f"{self._base_url}/{path}",
+                    headers=self._headers,
+                    params=params,
                 )
                 response.raise_for_status()
-                return response.json()
+                data = response.json()
+
+                errors = map_errors(data.get("errors", []))
+                if errors:
+                    raise ExternalAPIError(errors=errors)
+
+                return data
 
         except httpx.TimeoutException as timeout:
-            raise ExternalAPIError("API-Football timed out") from timeout
+            raise ExternalAPIError(
+                message="API-Football request timed out"
+            ) from timeout
 
         except httpx.HTTPStatusError as err:
             raise ExternalAPIError(
-                f"API-Football returned {err.response.status_code}"
+                message=f"API-Football returned {err.response.status_code}"
             ) from err
 
     async def get_player(self, player_id: int, year: str):
@@ -59,13 +83,10 @@ class ApiFootballProvider(FootballDataProvider):
         Returns:
             JSON: JSON request
         """
-        try:
-            return await self._request(
-                path="players",
-                params={"id": player_id, "season": year},
-            )
-        except ExternalAPIError:
-            return {}
+        return await self._request(
+            path="players",
+            params={"id": player_id, "season": year},
+        )
 
     async def get_team(self, team_id: int, competition_id: int, year: str):
         """Function that gets team data from Api-Football

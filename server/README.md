@@ -132,10 +132,3 @@ If you encounter import errors when running tests:
 - Check API rate limits and quota
 - Review API documentation at [api-football.com](https://www.api-football.com/)
 
-## License
-
-See [LICENSE](../LICENSE) for details.
-
-## Contributing
-
-When contributing, maintain adherence to the architectural rules and testing standards outlined in this document.

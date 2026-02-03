@@ -1,22 +1,16 @@
 """Tests for the stats module"""
 
+from datetime import date
+
 import pytest
+from app.modules.stats.models.dto.competition import Competition
+from app.modules.stats.models.dto.country import Country
+from app.modules.stats.models.dto.home_away import HomeAway
+from app.modules.stats.models.dto.player import Player
+from app.modules.stats.models.dto.team import Team
 from app.modules.stats.service import StatsService
 
 from .mock_provider import MockFailingProvider, MockWorkingProvider
-
-
-@pytest.mark.asyncio
-async def test_get_player_handles_external_api_error():
-    """
-    Checks if the service correctly handles external errors.
-    """
-    _provider = MockFailingProvider()
-    _service = StatsService(provider=_provider)
-
-    result = await _service.get_player(player_id=1, year="2021")
-
-    assert result == []
 
 
 @pytest.mark.asyncio
@@ -30,22 +24,20 @@ async def test_get_player_maps_data_properly():
     result = await _service.get_player(player_id=276, year="2022")
 
     assert result == [
-        {
-            "id": 276,
-            "name": "Neymar",
-            "season": 2022,
-            "dob": "1992-02-05",
-            "photo": "https://media.api-sports.io/football/players/276.png",
-            "age": 33,
-            "nationality": "Brazil",
-            "team_id": 85,
-            "team_name": "Paris Saint Germain",
-            "season_goals": 13,
-            "season_assists": 11,
-            "games_played": 20,
-            "position": "Attacker",
-            "number": None,
-        }
+        Player(
+            id=276,
+            name="Neymar",
+            season=2022,
+            dob=date(year=1992, month=2, day=5),  # 1992-02-05
+            photo="https://media.api-sports.io/football/players/276.png",
+            age=33,
+            nationality="Brazil",
+            goals=13,
+            assists=11,
+            games_played=None,
+            position="Attacker",
+            shirt_number=None,
+        )
     ]
 
 
@@ -60,23 +52,22 @@ async def test_get_team_maps_data_properly():
     result = await _service.get_team(team_id=1, competition_id=1, year="2021")
 
     assert result == [
-        {
-            "id": 33,
-            "team_name": "Manchester United",
-            "team_logo": "https://media.api-sports.io/football/teams/33.png",
-            "competition_id": 39,
-            "competition_name": "Premier League",
-            "competition_logo": "https://media.api-sports.io/football/leagues/39.png",
-            "competition_region": "England",
-            "year": 2022,
-            "form": "LLWWWWLWDWDWLWWWWWDLWDWWLDLWWWDWLLWWWW",
-            "played": 38,
-            "wins": {"home": 15, "away": 8, "total": 23},
-            "loses": {"home": 1, "away": 8, "total": 9},
-            "draws": {"home": 3, "away": 3, "total": 6},
-            "goals_for": {"home": 36, "away": 22, "total": 58},
-            "goals_against": {"home": 10, "away": 33, "total": 43},
-        }
+        Team(
+            id=33,
+            name="Manchester United",
+            competition=Competition(
+                id=39,
+                country=None,
+                season=2022,
+                name="Premier League",
+                logo="https://media.api-sports.io/football/leagues/39.png",
+            ),
+            wins=HomeAway(home=15, away=8, total=23),
+            loses=HomeAway(home=1, away=8, total=9),
+            draws=HomeAway(home=3, away=3, total=6),
+            goals_for=HomeAway(home=36, away=22, total=58),
+            goals_against=HomeAway(home=10, away=33, total=43),
+        )
     ]
 
 
@@ -91,14 +82,17 @@ async def test_get_competition_maps_data_properly():
     result = await _service.get_competition(competition_id=39)
 
     assert result == [
-        {
-            "competition_id": 39,
-            "competition_name": "Premier League",
-            "competition_logo": "https://media.api-sports.io/football/leagues/2.png",
-            "competition_country_code": "GB",
-            "competition_country_name": "England",
-            "competition_country_logo": "https://media.api-sports.io/flags/gb.svg",
-        }
+        Competition(
+            id=39,
+            country=Country(
+                code="GB",
+                name="England",
+                logo="https://media.api-sports.io/flags/gb.svg",
+            ),
+            season=None,
+            name="Premier League",
+            logo="https://media.api-sports.io/football/leagues/2.png",
+        )
     ]
 
 
@@ -113,9 +107,42 @@ async def test_get_country_maps_data_properly():
     result = await _service.get_country(country_code="BR")
 
     assert result == [
-        {
-            "country_code": "GB",
-            "country_name": "England",
-            "country_logo": "https://media.api-sports.io/flags/gb.svg",
-        }
+        Country(
+            code="GB", name="England", logo="https://media.api-sports.io/flags/gb.svg"
+        )
     ]
+
+
+@pytest.mark.asyncio
+async def test_error_is_mapped_on_499_500_iseandtimeout():
+    _provider = MockFailingProvider()
+
+    result = await _provider.get_500(player_id=1, year=2022)
+
+    assert result == {
+        "message": "Something went wrong while fetching details. Try again later."
+    }
+
+
+@pytest.mark.asyncio
+async def test_error_is_mapped_204_nocontent():
+    _provider = MockFailingProvider()
+
+    result = await _provider.get_204(id=1, year=2022)
+
+    assert result == {
+        "errors": {
+            "bug": "This is on our side, please report us this bug on "
+            "https://dashboard.api-football.com",
+            "report": "players",
+            "time": "2019-11-26T00:00:00+00:00",
+        },
+        "get": "players",
+        "paging": {
+            "current": 1,
+            "total": 1,
+        },
+        "parameters": [],
+        "response": [],
+        "results": 0,
+    }

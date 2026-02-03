@@ -79,9 +79,25 @@ async def search_players(query: str):
 
 @router.get("/competition")
 async def get_competition(commons: Annotated[dict, Depends(params)]):
+    """Get competition data from API-Football
+
+    Args:
+        commons (Annotated[dict, Depends): Value storing request parameters.
+
+    Returns:
+        Raw JSON data of competition
+    """
     return await commons["service"].get_competition(commons["competition_id"])
 
 
 @router.get("/country")
 async def get_country(commons: Annotated[dict, Depends(params)]):
+    """Get country data from API-Football
+
+    Args:
+        commons (Annotated[dict, Depends): Value storing request parameters.
+
+    Returns:
+        Raw JSON data of country
+    """
     return await commons["service"].get_country(commons["country_code"])
