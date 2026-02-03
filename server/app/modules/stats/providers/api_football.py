@@ -58,7 +58,7 @@ class ApiFootballProvider(FootballDataProvider):
                 response.raise_for_status()
                 data = response.json()
 
-                errors = map_errors(data)
+                errors = map_errors(data.get("errors", []))
                 if errors:
                     raise ExternalAPIError(errors=errors)
 

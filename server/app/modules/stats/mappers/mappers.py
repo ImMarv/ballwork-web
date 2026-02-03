@@ -1,5 +1,3 @@
-from typing import Any
-
 from ..models.dto.api_error import APIError
 from ..models.dto.competition import Competition
 from ..models.dto.country import Country
@@ -8,34 +6,31 @@ from ..models.dto.player import Player
 from ..models.dto.team import Team
 
 
-def map_errors(errors: Any) -> list[APIError]:
+"""Mappers for converting API responses to domain models."""
+
+
+def map_errors(errors: list | dict) -> list[APIError]:
     """
     Normalizes API error responses into a list of APIError objects.
+    
+    Handles both list format (empty or with error strings) and dict format 
+    (error_key -> message) from the API response.
     """
+    
     if not errors:
         return []
 
     result: list[APIError] = []
 
-    # Case 1: list of error strings
-    if isinstance(errors, list):
-        for e in errors:
-            result.append(
-                APIError(
-                    message=str(e),
-                    bug=e,
-                )
-            )
-        return result
-
-    # Case 2: dict of error_key -> message
+    # Handle dict format: error_key -> message
     if isinstance(errors, dict):
         for key, value in errors.items():
-            result.append(APIError(message=str(key), bug=key))
-        return result
+            result.append(APIError(message=str(value), bug=str(key)))
+    # Handle list format: list of error strings
+    else:
+        for err in errors:
+            result.append(APIError(message=str(err), bug=str(err)))
 
-    # Fallback (unknown format)
-    result.append(APIError(message="Unknown API error format"))
     return result
 
 
