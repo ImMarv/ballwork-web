@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date
 
 from pydantic import BaseModel
 
@@ -14,7 +14,7 @@ class Player(BaseModel):
     season: int
     name: str
     photo: str | None = None
-    dob: datetime
+    dob: date
     age: int
     position: str
     nationality: str

@@ -23,7 +23,7 @@ def map_errors(errors: Any) -> list[APIError]:
             result.append(
                 APIError(
                     message=str(e),
-                    raw=e,
+                    bug=e,
                 )
             )
         return result
@@ -31,22 +31,11 @@ def map_errors(errors: Any) -> list[APIError]:
     # Case 2: dict of error_key -> message
     if isinstance(errors, dict):
         for key, value in errors.items():
-            result.append(
-                APIError(
-                    message=str(value),
-                    code=key,
-                    raw={key: value},
-                )
-            )
+            result.append(APIError(message=str(key), bug=key))
         return result
 
     # Fallback (unknown format)
-    result.append(
-        APIError(
-            message="Unknown API error format",
-            raw=errors,
-        )
-    )
+    result.append(APIError(message="Unknown API error format"))
     return result
 
 

@@ -38,7 +38,7 @@ class MockFailingProvider(BaseMockProvider):
     A failing mock provider. Meant to test various external issues only
     """
 
-    async def get_player(self, player_id: int, year: str):
+    async def get_500(self, player_id: int, year: int):
         """
         Returns an external error.
 
@@ -47,7 +47,12 @@ class MockFailingProvider(BaseMockProvider):
         :param year: Season year.
         :type year: str
         """
-        raise ExternalAPIError("API unavailable")
+        mock_file = Path(__file__).parent / "mock_500_response.json"
+        return json.loads(mock_file.read_text())
+
+    async def get_204(self, id: int, year: int):
+        mock_file = Path(__file__).parent / "mock_204_response.json"
+        return json.loads(mock_file.read_text())
 
 
 class MockWorkingProvider(BaseMockProvider):

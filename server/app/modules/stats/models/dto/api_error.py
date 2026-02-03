@@ -1,9 +1,11 @@
 from pydantic import BaseModel
 from typing import Any
+from datetime import datetime
 
 
 class APIError(BaseModel):
     message: str
-    code: str | None = None
-    field: str | None = None
-    raw: Any | None = None
+    time: datetime | None = None
+    bug: str | None = None
+    plan: str | None = None
+    report: Any | None = None
