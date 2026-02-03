@@ -1,3 +1,5 @@
+from typing import Any
+
 from ..models.dto.api_error import APIError
 from ..models.dto.competition import Competition
 from ..models.dto.country import Country
@@ -6,8 +8,48 @@ from ..models.dto.player import Player
 from ..models.dto.team import Team
 
 
-def map_error(e: dict) -> APIError | None:
-    pass
+def map_errors(errors: Any) -> list[APIError]:
+    """
+    Normalizes API error responses into a list of APIError objects.
+    """
+    if not errors:
+        return []
+
+    result: list[APIError] = []
+
+    # Case 1: list of error strings
+    if isinstance(errors, list):
+        for e in errors:
+            result.append(
+                APIError(
+                    message=str(e),
+                    raw=e,
+                )
+            )
+        return result
+
+    # Case 2: dict of error_key -> message
+    if isinstance(errors, dict):
+        for key, value in errors.items():
+            result.append(
+                APIError(
+                    message=str(value),
+                    code=key,
+                    raw={key: value},
+                )
+            )
+        return result
+
+    # Fallback (unknown format)
+    result.append(
+        APIError(
+            message="Unknown API error format",
+            raw=errors,
+        )
+    )
+    return result
+
+
 def map_player_response(p: dict) -> Player | None:
     """
     Maps a player data dictionary to a Player object.
@@ -19,7 +61,7 @@ def map_player_response(p: dict) -> Player | None:
     stats = p.get("statistics", [])
 
     if not stats:
-        return None # TODO: Handle missing stats appropriately
+        return None  # TODO: Handle missing stats appropriately
 
     stats = stats[0]
 
@@ -35,7 +77,7 @@ def map_player_response(p: dict) -> Player | None:
         position=stats.get("games", {}).get("position"),
         goals=stats.get("goals", {}).get("total"),
         assists=stats.get("goals", {}).get("assists"),
-        shirt_number=stats.get("games", {}).get("number")
+        shirt_number=stats.get("games", {}).get("number"),
     )
 
 
@@ -54,10 +96,9 @@ def map_team_response(t: dict) -> Team | None:
     wins = fixture_info.get("wins")
     loses = fixture_info.get("loses")
     draws = fixture_info.get("draws")
-    
+
     goal_for = goal_info.get("for", {}).get("total", {})
     goal_against = goal_info.get("against", {}).get("total", {})
-
 
     if not team_info.get("id") or not league_info.get("id"):
         return None
@@ -67,36 +108,30 @@ def map_team_response(t: dict) -> Team | None:
         name=team_info.get("name"),
         table_position=t.get("position"),
         competition=Competition(
-            id = league_info.get("id"),
-            name = league_info.get("name"),
-            season = league_info.get("season"),
-            logo = league_info.get("logo")
-            ),
-        goals_for = HomeAway(
-            home= goal_for.get("home"),
-            away= goal_for.get("away"),
-            total= goal_for.get("total")
+            id=league_info.get("id"),
+            name=league_info.get("name"),
+            season=league_info.get("season"),
+            logo=league_info.get("logo"),
+        ),
+        goals_for=HomeAway(
+            home=goal_for.get("home"),
+            away=goal_for.get("away"),
+            total=goal_for.get("total"),
         ),
         goals_against=HomeAway(
             home=goal_against.get("home"),
             away=goal_against.get("away"),
-            total=goal_against.get("total")
+            total=goal_against.get("total"),
         ),
-        wins= HomeAway(
-            home = wins.get("home"),
-            away = wins.get("away"),
-            total = wins.get("total")
-            ),
+        wins=HomeAway(
+            home=wins.get("home"), away=wins.get("away"), total=wins.get("total")
+        ),
         loses=HomeAway(
-            home = loses.get("home"),
-            away = loses.get("away"),
-            total = loses.get("total")
+            home=loses.get("home"), away=loses.get("away"), total=loses.get("total")
         ),
         draws=HomeAway(
-            home = draws.get("home"),
-            away = draws.get("away"),
-            total = draws.get("total")
-        )
+            home=draws.get("home"), away=draws.get("away"), total=draws.get("total")
+        ),
     )
 
 
@@ -109,19 +144,19 @@ def map_competition_response(c: dict) -> Competition | None:
     """
     league_info = c.get("league", {})
     country_info = c.get("country", {})
-    
+
     if not league_info or not country_info:
         return None
-    
+
     return Competition(
         id=league_info.get("id"),
-        season=None, # this needs to change later.
+        season=None,  # this needs to change later.
         name=league_info.get("name"),
         logo=league_info.get("logo"),
         country=Country(
             code=country_info.get("code"),
             name=country_info.get("name"),
-            logo=country_info.get("flag")
+            logo=country_info.get("flag"),
         ),
     )
 
@@ -140,8 +175,4 @@ def map_country_response(c: dict) -> Country | None:
     if not code or not name:
         return None
 
-    return Country(
-        code=code,
-        name=name,
-        logo=logo
-    )
+    return Country(code=code, name=name, logo=logo)

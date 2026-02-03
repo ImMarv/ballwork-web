@@ -5,6 +5,7 @@ Service layer of the application.
 from .mappers.mappers import (
     map_competition_response,
     map_country_response,
+    map_errors,
     map_player_response,
     map_team_response,
 )
@@ -27,10 +28,11 @@ class StatsService:
 
     async def get_player(self, player_id: int, year: str) -> list[Player]:
         """Get player statistics for a given season."""
-        try:
-            raw_player = await self._provider.get_player(player_id, year)
-        except ExternalAPIError:
-            return []
+        raw_player = await self._provider.get_player(player_id, year)
+
+        errors = map_errors(raw_player.get("errors"))
+        if errors:
+            raise ExternalAPIError(errors)
 
         players = raw_player.get("response", [])
         results: list[Player] = []
@@ -46,10 +48,11 @@ class StatsService:
         self, team_id: int, competition_id: int, year: str
     ) -> list[Team]:
         """Get team statistics for a competition and season."""
-        try:
-            raw_team = await self._provider.get_team(team_id, competition_id, year)
-        except ExternalAPIError:
-            return []
+
+        raw_team = await self._provider.get_team(team_id, competition_id, year)
+        errors = map_errors(raw_team.get("errors"))
+        if errors:
+            raise ExternalAPIError(errors)
 
         teams = raw_team.get("response", {})
 
@@ -65,10 +68,12 @@ class StatsService:
 
     async def get_competition(self, competition_id: int) -> list[Competition]:
         """Get competition metadata."""
-        try:
-            raw_competition = await self._provider.get_competition(competition_id)
-        except ExternalAPIError:
-            return []
+
+        raw_competition = await self._provider.get_competition(competition_id)
+
+        errors = map_errors(raw_competition.get("errors"))
+        if errors:
+            raise ExternalAPIError(errors)
 
         competitions = raw_competition.get("response", [])
         results: list[Competition] = []
@@ -82,10 +87,11 @@ class StatsService:
 
     async def get_country(self, country_code: str) -> list[Country]:
         """Get country metadata."""
-        try:
-            raw_country = await self._provider.get_country(country_code.capitalize())
-        except ExternalAPIError:
-            return []
+        raw_country = await self._provider.get_country(country_code.capitalize())
+
+        errors = map_errors(raw_country.get("errors"))
+        if errors:
+            raise ExternalAPIError(errors)
 
         country = raw_country.get("response", [])
 
