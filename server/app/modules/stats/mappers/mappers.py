@@ -1,3 +1,5 @@
+"""Mappers for converting API responses to domain models."""
+
 from ..models.dto.api_error import APIError
 from ..models.dto.competition import Competition
 from ..models.dto.country import Country
@@ -6,17 +8,14 @@ from ..models.dto.player import Player
 from ..models.dto.team import Team
 
 
-"""Mappers for converting API responses to domain models."""
-
-
 def map_errors(errors: list | dict) -> list[APIError]:
     """
     Normalizes API error responses into a list of APIError objects.
-    
-    Handles both list format (empty or with error strings) and dict format 
+
+    Handles both list format (empty or with error strings) and dict format
     (error_key -> message) from the API response.
     """
-    
+
     if not errors:
         return []
 
