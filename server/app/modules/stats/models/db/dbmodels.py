@@ -1,13 +1,12 @@
-"""This is where all the database models are."""
+"""Subscriber DB Model"""
 
 from __future__ import annotations
 
 from datetime import date
-from typing import List, Optional
 
 from app.db_base.base import Base
-from sqlalchemy import Date, DateTime, Enum, ForeignKey, Integer, String
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy import Date, ForeignKey, Integer, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
 class Player(Base):

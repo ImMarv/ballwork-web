@@ -1,8 +1,8 @@
-"""initial-schema
+"""digest-database-models
 
-Revision ID: 2a58e207ccac
-Revises: 4699278b34ff
-Create Date: 2026-02-19 19:40:17.055167
+Revision ID: 3bbdd9f02edd
+Revises: 544c2e561377
+Create Date: 2026-02-24 15:42:16.508083
 
 """
 
@@ -13,8 +13,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = "2a58e207ccac"
-down_revision: Union[str, Sequence[str], None] = "4699278b34ff"
+revision: str = "3bbdd9f02edd"
+down_revision: Union[str, Sequence[str], None] = "544c2e561377"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

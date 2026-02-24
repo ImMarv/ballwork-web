@@ -9,6 +9,7 @@ engine = create_engine(settings.DATABASE_URL)  # connects to the database
 
 SessionFactory = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+
 def get_db():
     db = SessionFactory()
     try:
