@@ -30,7 +30,7 @@ class StatsService:
         """Get player statistics for a given season."""
         raw_player = await self._provider.get_player(player_id, year)
 
-        errors = map_errors(raw_player.get("errors"))
+        errors = map_errors(raw_player.get("errors", {}))
         if errors:
             raise ExternalAPIError(errors)
 
@@ -50,7 +50,7 @@ class StatsService:
         """Get team statistics for a competition and season."""
 
         raw_team = await self._provider.get_team(team_id, competition_id, year)
-        errors = map_errors(raw_team.get("errors"))
+        errors = map_errors(raw_team.get("errors", {}))
         if errors:
             raise ExternalAPIError(errors)
 
@@ -71,7 +71,7 @@ class StatsService:
 
         raw_competition = await self._provider.get_competition(competition_id)
 
-        errors = map_errors(raw_competition.get("errors"))
+        errors = map_errors(raw_competition.get("errors", {}))
         if errors:
             raise ExternalAPIError(errors)
 
