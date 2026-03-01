@@ -54,12 +54,9 @@ class EventRepository(Protocol):
         return self.session.get(event, selected_id)
 
     def add(self, event: NotificationEvent):
-        """_summary_
+        """Adds Notification Event to DB
 
         Args:
             event (NotificationEvent): _description_
-
-        Returns:
-            NotificationEvent | None: _description_
         """
         return self.session.add(event)
