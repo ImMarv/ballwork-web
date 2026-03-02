@@ -27,7 +27,7 @@ class SubscriberRepository(Protocol):
         return self.session.query(Subscriber).filter(Subscriber.email == email).first()
 
     def get_all_active(self) -> List[Subscriber]:
-        return self.session.query(Subscriber).filter(Subscriber.isActive == True).all()
+        return self.session.query(Subscriber).filter(Subscriber.isActive).all()
 
     def get_all(self) -> List[Subscriber]:
         return self.session.query(Subscriber).all()
