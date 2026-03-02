@@ -1,4 +1,5 @@
 """Interface for Email Services"""
+
 from abc import ABC, abstractmethod
 
 

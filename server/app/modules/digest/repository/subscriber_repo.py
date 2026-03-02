@@ -17,7 +17,11 @@ class SubscriberRepository(Protocol):
         return subscriber
 
     def get_by_id(self, subscriber_id: int) -> Optional[Subscriber]:
-        return self.session.query(Subscriber).filter(Subscriber.id == subscriber_id).first()
+        return (
+            self.session.query(Subscriber)
+            .filter(Subscriber.id == subscriber_id)
+            .first()
+        )
 
     def get_by_email(self, email: str) -> Optional[Subscriber]:
         return self.session.query(Subscriber).filter(Subscriber.email == email).first()

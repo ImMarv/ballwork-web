@@ -9,7 +9,7 @@ from .models.notification_event_digest import NotificationEvent
 
 
 class EventRepository(Protocol):
-    """Class dealing with DOA for events 
+    """Class dealing with DOA for events
 
     Args:
         Protocol (_type_)
@@ -17,13 +17,12 @@ class EventRepository(Protocol):
     Returns:
         _type_: _description_
     """
+
     session: Session
-    
+
     def get_events_between(
-            self, event: NotificationEvent,
-            start: date,
-            end: date
-            ) -> List[NotificationEvent]:
+        self, event: NotificationEvent, start: date, end: date
+    ) -> List[NotificationEvent]:
         """Get a list of events between a start date and an end date.
 
         Args:
@@ -34,14 +33,16 @@ class EventRepository(Protocol):
         Returns:
             list[NotificationEvent]: A list of all notification events between the end and start
         """
-        return self.session.query(event).filter(
-            NotificationEvent.created_at >= start).filter(
-                NotificationEvent.created_at <= end).all()
+        return (
+            self.session.query(event)
+            .filter(NotificationEvent.created_at >= start)
+            .filter(NotificationEvent.created_at <= end)
+            .all()
+        )
 
     def get_by_id(
-            self, 
-            event: NotificationEvent, 
-            selected_id: int) -> NotificationEvent | None:
+        self, event: NotificationEvent, selected_id: int
+    ) -> NotificationEvent | None:
         """Get the event by id.
 
         Args:

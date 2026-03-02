@@ -6,11 +6,12 @@ from i_email_service import EmailService
 
 
 class SMTPEmailService(EmailService):
-    """In charge of SMTP Conncetions and 
+    """In charge of SMTP Conncetions and
 
     Args:
         EmailService (_type_): _description_
     """
+
     def __init__(
         self,
         host: str,
@@ -18,7 +19,7 @@ class SMTPEmailService(EmailService):
         username: Optional[str],
         password: Optional[str],
         use_tls: bool = True,
-        from_address: str = "noreply@yourapp.com"
+        from_address: str = "noreply@yourapp.com",
     ):
         self.host = host
         self.port = port

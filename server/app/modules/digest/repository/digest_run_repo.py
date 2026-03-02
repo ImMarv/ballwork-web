@@ -16,6 +16,7 @@ class DigestRunRepository(Protocol):
     Returns:
         _type_: _description_
     """
+
     session: Session
 
     def add_run(self, run: DigestRun):
