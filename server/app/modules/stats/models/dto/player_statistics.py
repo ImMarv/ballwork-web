@@ -3,7 +3,7 @@ from datetime import date
 from pydantic import BaseModel
 
 
-class Player(BaseModel):
+class PlayerStatistics(BaseModel):
     """Base pydantic model for a player
 
     Args:
