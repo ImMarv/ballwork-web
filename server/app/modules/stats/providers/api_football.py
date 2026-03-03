@@ -108,7 +108,7 @@ class ApiFootballProvider(FootballDataProvider):
         Args:
             query (str): Lastname of the entity
         """
-        return await self._request(path="/players/profiles", params={"search": query})
+        return await self._request(path="players/profiles", params={"search": query})
     
     async def search_teams(self, query: str):
         """Function that searches for teams based on a query from Api-Football
@@ -116,7 +116,7 @@ class ApiFootballProvider(FootballDataProvider):
         Args:
             query (str): Lastname of the entity
         """
-        return await self._request(path="/teams", params={"search": query})
+        return await self._request(path="teams", params={"search": query})
     
     async def search_competitions(self, query: str):
         """Function that searches for competitions based on a query from Api-Football
@@ -124,7 +124,7 @@ class ApiFootballProvider(FootballDataProvider):
         Args:
             query (str): Lastname of the entity
         """
-        return await self._request(path="/leagues", params={"search": query})
+        return await self._request(path="leagues", params={"search": query})
 
     async def get_competition(self, competition_id: int):
         """Function that retrieves the league required from API-Football

@@ -45,7 +45,7 @@ def map_player_response(p: dict) -> PlayerStatistics | None:
     player_info = p.get("player", {})
     stats = p.get("statistics", [])
 
-    if not stats or player_info:
+    if not stats or not player_info:
         return None  # TODO: Handle missing stats appropriately
 
     stats = stats[0]
@@ -129,7 +129,7 @@ def map_team_search(t: dict) -> TeamSummary | None:
         TeamSummary | None: Team object with mapped attributes, or None if required data is missing.
     """
     team_info = t.get("team", {})
-    venue_info = t.get("team", {})
+    venue_info = t.get("venue", {})
 
     if not team_info or not venue_info:
         return None
