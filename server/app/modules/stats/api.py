@@ -16,6 +16,7 @@ async def params(
     player_id: int | None = None,
     team_id: int | None = None,
     year: str | None = None,
+    query: str | None = None,
     competition_id: int | None = None,
     country_code: str | None = None,
     service: StatsService = Depends(get_stats_service),  # noqa: B008
@@ -35,6 +36,7 @@ async def params(
         "player_id": player_id,
         "team_id": team_id,
         "year": year,
+        "query": query,
         "competition_id": competition_id,
         "country_code": country_code,
         "service": service,
@@ -72,9 +74,46 @@ async def get_team(commons: Annotated[dict, Depends(params)]):
     )
 
 
-@router.get("/search")
-async def search_players(query: str):
-    return {"team_id": query}
+@router.get("/search/player")
+async def search_players(query: str, commons: Annotated[dict, Depends(params)]):
+    """Search for players
+
+    Args:
+        query (str): Search query for player name
+        commons (Annotated[dict, Depends): Value storing request parameters
+
+    Returns:
+        Search results for players
+    """
+    return await commons["service"].search_players(query)
+
+
+@router.get("/search/team")
+async def search_teams(query: str, commons: Annotated[dict, Depends(params)]):
+    """Search for teams
+
+    Args:
+        query (str): Search query for team name
+        commons (Annotated[dict, Depends): Value storing request parameters
+
+    Returns:
+        Search results for teams
+    """
+    return await commons["service"].search_teams(query)
+
+
+@router.get("/search/competition")
+async def search_competitions(query: str, commons: Annotated[dict, Depends(params)]):
+    """Search for competitions
+
+    Args:
+        query (str): Search query for competition name
+        commons (Annotated[dict, Depends): Value storing request parameters
+
+    Returns:
+        Search results for competitions
+    """
+    return await commons["service"].search_competitions(query)
 
 
 @router.get("/competition")

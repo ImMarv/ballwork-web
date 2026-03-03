@@ -22,6 +22,14 @@ class FootballDataProvider(ABC):
         pass
 
     @abstractmethod
+    async def search_teams(self, query: str) -> Mapping[str, Any]:
+        pass
+
+    @abstractmethod
+    async def search_competitions(self, query: str) -> Mapping[str, Any]:
+        pass
+
+    @abstractmethod
     async def search_players(self, query: str) -> Mapping[str, Any]:
         pass
 

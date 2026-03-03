@@ -6,8 +6,8 @@ import pytest
 from app.modules.stats.models.dto.competition import Competition
 from app.modules.stats.models.dto.country import Country
 from app.modules.stats.models.dto.home_away import HomeAway
-from app.modules.stats.models.dto.player import Player
-from app.modules.stats.models.dto.team import Team
+from server.app.modules.stats.models.dto.player_statistics import PlayerStatistics
+from server.app.modules.stats.models.dto.team_stats import Team
 from app.modules.stats.service import StatsService
 
 from .mock_provider import MockFailingProvider, MockWorkingProvider
@@ -24,7 +24,7 @@ async def test_get_player_maps_data_properly():
     result = await _service.get_player(player_id=276, year="2022")
 
     assert result == [
-        Player(
+        PlayerStatistics(
             id=276,
             name="Neymar",
             season=2022,
