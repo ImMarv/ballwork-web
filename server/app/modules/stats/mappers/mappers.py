@@ -119,6 +119,7 @@ def map_team_response(t: dict) -> Team | None:
         ),
     )
 
+
 def map_team_search(t: dict) -> TeamSummary | None:
     """Maps a team summary (obtained from a simpler endpoint) to a TeamSummary
 
@@ -133,38 +134,38 @@ def map_team_search(t: dict) -> TeamSummary | None:
 
     if not team_info or not venue_info:
         return None
-    
+
     return TeamSummary(
-        id = team_info.get("id"),
-        name = team_info.get("name"),
-        code= team_info.get("code"),
+        id=team_info.get("id"),
+        name=team_info.get("name"),
+        code=team_info.get("code"),
         country=team_info.get("country"),
         founded=team_info.get("founded"),
-        logo=team_info.get("logo") ,
+        logo=team_info.get("logo"),
         venue_city=venue_info.get("city"),
         venue_name=venue_info.get("name"),
     )
+
 
 def map_player_search(p: dict) -> PlayerProfile | None:
     player_info = p.get("player", {})
 
     if not player_info:
         return None
-    
-    return PlayerProfile(
-        id= player_info.get("id"),
-        name= player_info.get("name"),
-        firstname= player_info.get("firstname"),
-        lastname= player_info.get("lastname"),
-        dob= player_info.get("birth", {}).get("date"),
-        age= player_info.get("age"),
-        photo= player_info.get("photo"),
-        position= player_info.get("position"),
-        height= player_info.get("height"),
-        weight= player_info.get("weight"),
-        nationality= player_info.get("nationality"),
-    )
 
+    return PlayerProfile(
+        id=player_info.get("id"),
+        name=player_info.get("name"),
+        firstname=player_info.get("firstname"),
+        lastname=player_info.get("lastname"),
+        dob=player_info.get("birth", {}).get("date"),
+        age=player_info.get("age"),
+        photo=player_info.get("photo"),
+        position=player_info.get("position"),
+        height=player_info.get("height"),
+        weight=player_info.get("weight"),
+        nationality=player_info.get("nationality"),
+    )
 
 
 def map_competition_response(c: dict) -> Competition | None:

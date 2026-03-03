@@ -1,6 +1,7 @@
 """
 Service layer of the application.
 """
+
 from asyncio import gather
 from .mappers.mappers import (
     map_competition_response,
@@ -9,7 +10,7 @@ from .mappers.mappers import (
     map_player_response,
     map_team_response,
     map_player_search,
-    map_team_search
+    map_team_search,
 )
 from .models.dto.competition import Competition
 from .models.dto.country import Country
@@ -101,6 +102,7 @@ class StatsService:
 
         dto = map_country_response(country)
         return [dto] if dto is not None else []
+
     # endregion
 
     # region - Searchers
@@ -111,7 +113,7 @@ class StatsService:
         errors = map_errors(raw_search.get("errors", []))
         if errors:
             raise ExternalAPIError(errors)
-        
+
         players = raw_search.get("response", [])
         results: list[PlayerProfile] = []
 
@@ -121,14 +123,14 @@ class StatsService:
                 results.append(dto)
 
         return results
-    
+
     async def search_teams(self, query: str) -> list[TeamSummary]:
         raw_search = await self._provider.search_teams(query)
 
         errors = map_errors(raw_search.get("errors", []))
         if errors:
             raise ExternalAPIError(errors)
-        
+
         teams = raw_search.get("response", [])
         results: list[TeamSummary] = []
 
@@ -138,14 +140,14 @@ class StatsService:
                 results.append(dto)
 
         return results
-    
+
     async def search_competitions(self, query: str) -> list[Competition]:
         raw_search = await self._provider.search_competitions(query)
 
         errors = map_errors(raw_search.get("errors", []))
         if errors:
             raise ExternalAPIError(errors)
-        
+
         competitions = raw_search.get("response", [])
         results: list[Competition] = []
 
@@ -155,16 +157,14 @@ class StatsService:
                 results.append(dto)
 
         return results
-    
+
     async def unified_search(self, query: str):
         players_task = self.search_players(query)
         teams_task = self.search_teams(query)
         competitions_task = self.search_competitions(query)
 
         players, teams, competitions = await gather(
-            players_task,
-            teams_task,
-            competitions_task
+            players_task, teams_task, competitions_task
         )
 
         return {
@@ -172,5 +172,5 @@ class StatsService:
             "teams": teams,
             "competitions": competitions,
         }
-    
+
     # endregion
