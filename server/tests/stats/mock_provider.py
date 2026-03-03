@@ -20,7 +20,7 @@ class BaseMockProvider(FootballDataProvider):
     async def get_team(self, team_id: int, competition_id: int, year: str):
         raise NotImplementedError
 
-    async def search_players(self, query: str):
+    async def search_teams(self, query: str):
         raise NotImplementedError
 
     async def search_teams(self, query: str):

@@ -4,8 +4,10 @@ from ..models.dto.api_error import APIError
 from ..models.dto.competition import Competition
 from ..models.dto.country import Country
 from ..models.dto.home_away import HomeAway
-from ..models.dto.player import Player
-from ..models.dto.team import Team
+from ..models.dto.player_statistics import PlayerStatistics
+from ..models.dto.team_stats import Team
+from ..models.dto.team_summary import TeamSummary
+from ..models.dto.player_profile import PlayerProfile
 
 
 def map_errors(errors: list | dict) -> list[APIError]:
@@ -33,7 +35,7 @@ def map_errors(errors: list | dict) -> list[APIError]:
     return result
 
 
-def map_player_response(p: dict) -> Player | None:
+def map_player_response(p: dict) -> PlayerStatistics | None:
     """
     Maps a player data dictionary to a Player object.
 
@@ -43,12 +45,12 @@ def map_player_response(p: dict) -> Player | None:
     player_info = p.get("player", {})
     stats = p.get("statistics", [])
 
-    if not stats:
+    if not stats or not player_info:
         return None  # TODO: Handle missing stats appropriately
 
     stats = stats[0]
 
-    return Player(
+    return PlayerStatistics(
         id=player_info.get("id"),
         name=player_info.get("name"),
         season=stats.get("league", {}).get("season"),
@@ -115,6 +117,54 @@ def map_team_response(t: dict) -> Team | None:
         draws=HomeAway(
             home=draws.get("home"), away=draws.get("away"), total=draws.get("total")
         ),
+    )
+
+
+def map_team_search(t: dict) -> TeamSummary | None:
+    """Maps a team summary (obtained from a simpler endpoint) to a TeamSummary
+
+    Args:
+        t (dict): Dictionary containing team information and venue data.
+
+    Returns:
+        TeamSummary | None: Team object with mapped attributes, or None if required data is missing.
+    """
+    team_info = t.get("team", {})
+    venue_info = t.get("venue", {})
+
+    if not team_info or not venue_info:
+        return None
+
+    return TeamSummary(
+        id=team_info.get("id"),
+        name=team_info.get("name"),
+        code=team_info.get("code"),
+        country=team_info.get("country"),
+        founded=team_info.get("founded"),
+        logo=team_info.get("logo"),
+        venue_city=venue_info.get("city"),
+        venue_name=venue_info.get("name"),
+    )
+
+
+def map_player_search(p: dict) -> PlayerProfile | None:
+    player_info = p.get("player", {})
+
+    if not player_info:
+        return None
+
+    return PlayerProfile(
+        id=player_info.get("id"),
+        name=player_info.get("name"),
+        firstname=player_info.get("firstname"),
+        lastname=player_info.get("lastname"),
+        dob=player_info.get("birth", {}).get("date"),
+        age=player_info.get("age"),
+        photo=player_info.get("photo"),
+        position=player_info.get("position"),
+        height=player_info.get("height"),
+        weight=player_info.get("weight"),
+        nationality=player_info.get("nationality"),
     )
 
 
