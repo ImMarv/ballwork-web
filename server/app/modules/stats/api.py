@@ -76,14 +76,14 @@ async def get_team(commons: Annotated[dict, Depends(params)]):
 
 @router.get("/search")
 async def unified_search(
-    commons: Annotated[dict, Depends(params)], query: str, limit: int = 10
+    commons: Annotated[dict, Depends(params)], query: str
 ):
-    return await commons["service"].unified_search(query, limit)
+    return await commons["service"].unified_search(query)
 
 
 @router.get("/search/player")
 async def search_players(
-    commons: Annotated[dict, Depends(params)], query: str, limit: int = 10
+    commons: Annotated[dict, Depends(params)], query: str, limit: int
 ):
     """Search for players
 
@@ -99,7 +99,7 @@ async def search_players(
 
 @router.get("/search/team")
 async def search_teams(
-    commons: Annotated[dict, Depends(params)], query: str, limit: int = 10
+    commons: Annotated[dict, Depends(params)], query: str, limit: int
 ):
     """Search for teams
 
@@ -115,7 +115,7 @@ async def search_teams(
 
 @router.get("/search/competition")
 async def search_competitions(
-    commons: Annotated[dict, Depends(params)], query: str, limit: int = 10
+    commons: Annotated[dict, Depends(params)], query: str, limit: int
 ):
     """Search for competitions
 
