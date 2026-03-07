@@ -1,0 +1,36 @@
+/* filepath: c:\Users\ender\source\repos\ballwork-web\client-ballwork\src\components\searchfilters\SearchFilters.css */
+
+.search-filters {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 20px 0;
+}
+
+.search-filters label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+}
+
+.search-filters select {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: #fff;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.search-filters select:hover {
+    border-color: #bbb;
+    box-shadow: 0 1px 4px rgba(32, 33, 36, 0.08);
+}
+
+.search-filters select:focus {
+    border-color: #4285f4;
+    box-shadow: 0 1px 4px rgba(32, 33, 36, 0.28);
+}

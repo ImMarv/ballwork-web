@@ -21,6 +21,9 @@ from .models.dto.player_profile import PlayerProfile
 from .providers.api_football import ExternalAPIError
 from .providers.ifootball_provider import FootballDataProvider
 
+DEFAULT_SEARCH_LIMIT = 10
+MAX_SEARCH_LIMIT = 50
+
 
 class StatsService:
     """
@@ -106,8 +109,11 @@ class StatsService:
     # endregion
 
     # region - Searchers
-    async def search_players(self, query: str) -> list[PlayerProfile]:
+    async def search_players(
+        self, query: str, limit: int = DEFAULT_SEARCH_LIMIT
+    ) -> list[PlayerProfile]:
         # Placeholder for future implementation
+        limit = min(limit, MAX_SEARCH_LIMIT)
         raw_search = await self._provider.search_players(query)
 
         errors = map_errors(raw_search.get("errors", []))
@@ -122,9 +128,12 @@ class StatsService:
             if dto is not None:
                 results.append(dto)
 
-        return results
+        return results[:limit]
 
-    async def search_teams(self, query: str) -> list[TeamSummary]:
+    async def search_teams(
+        self, query: str, limit: int = DEFAULT_SEARCH_LIMIT
+    ) -> list[TeamSummary]:
+        limit = min(limit, MAX_SEARCH_LIMIT)
         raw_search = await self._provider.search_teams(query)
 
         errors = map_errors(raw_search.get("errors", []))
@@ -139,9 +148,12 @@ class StatsService:
             if dto is not None:
                 results.append(dto)
 
-        return results
+        return results[:limit]
 
-    async def search_competitions(self, query: str) -> list[Competition]:
+    async def search_competitions(
+        self, query: str, limit: int = DEFAULT_SEARCH_LIMIT
+    ) -> list[Competition]:
+        limit = min(limit, MAX_SEARCH_LIMIT)
         raw_search = await self._provider.search_competitions(query)
 
         errors = map_errors(raw_search.get("errors", []))
@@ -156,7 +168,7 @@ class StatsService:
             if dto is not None:
                 results.append(dto)
 
-        return results
+        return results[:limit]
 
     async def unified_search(self, query: str):
         players_task = self.search_players(query)
