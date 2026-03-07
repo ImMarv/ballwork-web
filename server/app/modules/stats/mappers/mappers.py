@@ -1,5 +1,5 @@
 """Mappers for converting API responses to domain models."""
-
+from datetime import datetime
 from ..models.dto.api_error import APIError
 from ..models.dto.competition import Competition
 from ..models.dto.country import Country
@@ -153,12 +153,19 @@ def map_player_search(p: dict) -> PlayerProfile | None:
     if not player_info:
         return None
 
+    dob_raw = player_info.get("birth", {}).get("date")
+
+    dob = None
+    if dob_raw:
+        #dob = (dob_raw, "%Y-%m-%d").date()
+        dob = datetime.strptime(dob_raw, "%Y-%m-%d").date()
+
     return PlayerProfile(
         id=player_info.get("id"),
         name=player_info.get("name"),
         firstname=player_info.get("firstname"),
         lastname=player_info.get("lastname"),
-        dob=player_info.get("birth", {}).get("date"),
+        dob=dob,
         age=player_info.get("age"),
         photo=player_info.get("photo"),
         position=player_info.get("position"),
