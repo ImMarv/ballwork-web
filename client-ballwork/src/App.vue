@@ -3,7 +3,7 @@
 </template>
 
 <script setup>
-import Home from "./views/Home.vue";
+import Home from "./views/homeview/Home.vue";
 </script>
 
 <style>
