@@ -3,5 +3,14 @@
         {
             "path": "."
         }
-    ]
+    ],
+    "settings": {
+        "python-envs.pythonProjects": [
+            {
+                "path": "client-ballwork",
+                "envManager": "ms-python.python:venv",
+                "packageManager": "ms-python.python:pip"
+            }
+        ]
+    }
 }
