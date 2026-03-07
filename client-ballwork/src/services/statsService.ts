@@ -2,28 +2,28 @@ import { api } from "./apiClient"
 
 export const statsService = {
 
-  async unifiedSearch(query: string) {
+  async unifiedSearch(query: string, limit: number = 10) {
     const response = await api.get("/search", {
-      params: { query }
+      params: { query, limit }
     })
     return response.data
   },
 
-  async searchPlayers(query: string, limit: number) {
+  async searchPlayers(query: string, limit: number = 10) {
     const response = await api.get("/search/player", {
       params: { query, limit }
     })
     return response.data
   },
 
-  async searchTeams(query: string, limit: number) {
+  async searchTeams(query: string, limit: number = 10) {
     const response = await api.get("/search/team", {
       params: { query, limit }
     })
     return response.data
   },
 
-  async searchCompetitions(query: string, limit: number) {
+  async searchCompetitions(query: string, limit: number = 10) {
     const response = await api.get("/search/competition", {
       params: { query, limit }
     })

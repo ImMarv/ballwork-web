@@ -19,7 +19,7 @@ function onFilterChange() {
       <option value="player">Player</option>
       <option value="team">Team</option>
       <option value="competition">Competition</option>
-      <option value="All">All</option>
+      <option value="all">All</option>
     </select>
   </div>
 </template>

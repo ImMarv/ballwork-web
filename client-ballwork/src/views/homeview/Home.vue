@@ -1,11 +1,12 @@
 <script setup lang="ts">
 
 import { ref } from "vue"
+import { useRouter } from "vue-router"
 
 import SearchBar from "../../components/searchbar/SearchBar.vue"
 import SearchFilters from "../../components/searchfilters/SearchFilters.vue"
 
-import { statsService } from "../../services/statsService"
+const router = useRouter()
 
 const selectedFilter = ref("player")
 
@@ -13,31 +14,17 @@ function updateFilter(filter: string) {
   selectedFilter.value = filter
 }
 
-async function handleSearch(query: string, limit: number) {
+function handleSearch(query: string) {
 
-  let results
+  if (!query.trim()) return
 
-  switch (selectedFilter.value) {
-
-    case "player":
-      results = await statsService.searchPlayers(query, limit)
-      break
-
-    case "team":
-      results = await statsService.searchTeams(query, limit)
-      break
-
-    case "competition":
-      results = await statsService.searchCompetitions(query, limit)
-      break
-
-    case "All":
-      results = await statsService.unifiedSearch(query)
-      break
-
-  }
-
-  console.log(results)
+  router.push({
+    name: "search",
+    query: {
+      q: query,
+      type: selectedFilter.value
+    }
+  })
 
 }
 
@@ -47,12 +34,12 @@ async function handleSearch(query: string, limit: number) {
 
 <div class="home">
 
-<h1>Ballwork</h1>
-<h2>a football searcher</h2>
+  <h1>Ballwork</h1>
+  <h2>a football searcher</h2>
 
-<SearchBar @search="handleSearch" />
+  <SearchBar @search="handleSearch" />
 
-<SearchFilters @filterChanged="updateFilter" />
+  <SearchFilters @filterChanged="updateFilter" />
 
 </div>
 
