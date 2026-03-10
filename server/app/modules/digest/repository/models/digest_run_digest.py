@@ -1,5 +1,4 @@
 """Digest run database models."""
-
 from enum import Enum as PyEnum
 
 from app.db_base.base import Base
@@ -12,12 +11,11 @@ class DigestStatus(PyEnum):
     FAILED = "FAILED"
     PARTIAL = "PARTIAL"
 
-
 class DigestRun(Base):
     __tablename__ = "digest_run"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     subscriber_id: Mapped[int] = mapped_column(ForeignKey("subscriber_digest.id"))
     period_start: Mapped[DateTime] = mapped_column(DateTime(timezone=True))
-    status: Mapped[DigestStatus] = mapped_column(Enum(DigestStatus))
+    status: Mapped[str] = mapped_column(Enum(DigestStatus))
     sent_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True))

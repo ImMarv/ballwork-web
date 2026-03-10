@@ -1,6 +1,6 @@
 """Event repository module for managing notification event digests."""
 
-from datetime import date
+from datetime import date, datetime
 from typing import List, Protocol
 
 from sqlalchemy.orm import Session
@@ -21,7 +21,7 @@ class EventRepository(Protocol):
     session: Session
 
     def get_events_between(
-        self, event: NotificationEvent, start: date, end: date
+        self, start: date | datetime, end: date | datetime
     ) -> List[NotificationEvent]:
         """Get a list of events between a start date and an end date.
 
@@ -34,7 +34,7 @@ class EventRepository(Protocol):
             list[NotificationEvent]: A list of all notification events between the end and start
         """
         return (
-            self.session.query(event)
+            self.session.query(NotificationEvent)
             .filter(NotificationEvent.created_at >= start)
             .filter(NotificationEvent.created_at <= end)
             .all()
