@@ -43,4 +43,48 @@ class SMTPEmailService(EmailService):
                 server.login(self.username, self.password)
 
             server.send_message(message)
-        server.quit()
+            server.quit()
+
+
+# region - Errors Handlers
+class EmailError(Exception):
+    """Base exception for email service errors"""
+
+    pass
+
+
+class SMTPConnectionError(EmailError):
+    """Raised when unable to connect to SMTP server"""
+
+    pass
+
+
+class SMTPAuthenticationError(EmailError):
+    """Raised when SMTP authentication fails"""
+
+    pass
+
+
+class InvalidEmailError(EmailError):
+    """Raised when email address format is invalid"""
+
+    pass
+
+
+class EmailSendError(EmailError):
+    """Raised when email fails to send"""
+
+    def __init__(self, message: str, error_code: Optional[int] = None):
+        super().__init__(message)
+        self._error_code = error_code
+
+    def error_code(self) -> Optional[int]:
+        """Return the SMTP error code if available."""
+        return self._error_code
+
+    def error_message(self) -> str:
+        """Return the error message."""
+        return str(self)
+
+
+# endregion
