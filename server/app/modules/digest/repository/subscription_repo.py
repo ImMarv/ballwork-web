@@ -43,12 +43,11 @@ class SubscriptionRepository:
             self.session.commit()
             return True
         return False
+
     def get_subscriptions_from(self, subscriber_id: int):
         subscriptions = (
-        self.session.query(Subscription)
-        .filter(Subscription.subscriber_id == subscriber_id)
-        .all()
+            self.session.query(Subscription)
+            .filter(Subscription.subscriber_id == subscriber_id)
+            .all()
         )
         return subscriptions
-
-

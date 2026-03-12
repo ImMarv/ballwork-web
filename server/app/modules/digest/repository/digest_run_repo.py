@@ -1,4 +1,5 @@
 """Digest run repository module for exclusively adding digest runs."""
+
 from datetime import datetime
 from typing import Protocol
 
@@ -24,7 +25,8 @@ class DigestRunRepository(Protocol):
             subscriber_id=subscriber_id,
             period_start=period_start,
             status=status,
-            sent_at=datetime.now()
+            sent_at=datetime.now(),
         )
         self.session.add(run)
         self.session.commit()
+        return run
