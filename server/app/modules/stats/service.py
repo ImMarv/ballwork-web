@@ -2,19 +2,27 @@
 Service layer of the application.
 """
 
+from asyncio import gather
 from .mappers.mappers import (
     map_competition_response,
     map_country_response,
     map_errors,
     map_player_response,
     map_team_response,
+    map_player_search,
+    map_team_search,
 )
 from .models.dto.competition import Competition
 from .models.dto.country import Country
-from .models.dto.player import Player
-from .models.dto.team import Team
+from .models.dto.player_statistics import PlayerStatistics
+from .models.dto.team_stats import Team
+from .models.dto.team_summary import TeamSummary
+from .models.dto.player_profile import PlayerProfile
 from .providers.api_football import ExternalAPIError
 from .providers.ifootball_provider import FootballDataProvider
+
+DEFAULT_SEARCH_LIMIT = 10
+MAX_SEARCH_LIMIT = 50
 
 
 class StatsService:
@@ -26,7 +34,8 @@ class StatsService:
     def __init__(self, provider: FootballDataProvider):
         self._provider = provider
 
-    async def get_player(self, player_id: int, year: str) -> list[Player]:
+    # region - Getters
+    async def get_player(self, player_id: int, year: str) -> list[PlayerStatistics]:
         """Get player statistics for a given season."""
         raw_player = await self._provider.get_player(player_id, year)
 
@@ -35,7 +44,7 @@ class StatsService:
             raise ExternalAPIError(errors)
 
         players = raw_player.get("response", [])
-        results: list[Player] = []
+        results: list[PlayerStatistics] = []
 
         for p in players:
             dto = map_player_response(p)
@@ -61,10 +70,6 @@ class StatsService:
 
         dto = map_team_response(teams)
         return [dto] if dto is not None else []
-
-    async def search_players(self, query: str) -> list[Player]:
-        # Placeholder for future implementation
-        return []
 
     async def get_competition(self, competition_id: int) -> list[Competition]:
         """Get competition metadata."""
@@ -100,3 +105,84 @@ class StatsService:
 
         dto = map_country_response(country)
         return [dto] if dto is not None else []
+
+    # endregion
+
+    # region - Searchers
+    async def search_players(
+        self, query: str, limit: int = DEFAULT_SEARCH_LIMIT
+    ) -> list[PlayerProfile]:
+        # Placeholder for future implementation
+        limit = min(limit, MAX_SEARCH_LIMIT)
+        raw_search = await self._provider.search_players(query)
+
+        errors = map_errors(raw_search.get("errors", []))
+        if errors:
+            raise ExternalAPIError(errors)
+
+        players = raw_search.get("response", [])
+        results: list[PlayerProfile] = []
+
+        for p in players:
+            dto = map_player_search(p)
+            if dto is not None:
+                results.append(dto)
+
+        return results[:limit]
+
+    async def search_teams(
+        self, query: str, limit: int = DEFAULT_SEARCH_LIMIT
+    ) -> list[TeamSummary]:
+        limit = min(limit, MAX_SEARCH_LIMIT)
+        raw_search = await self._provider.search_teams(query)
+
+        errors = map_errors(raw_search.get("errors", []))
+        if errors:
+            raise ExternalAPIError(errors)
+
+        teams = raw_search.get("response", [])
+        results: list[TeamSummary] = []
+
+        for t in teams:
+            dto = map_team_search(t)
+            if dto is not None:
+                results.append(dto)
+
+        return results[:limit]
+
+    async def search_competitions(
+        self, query: str, limit: int = DEFAULT_SEARCH_LIMIT
+    ) -> list[Competition]:
+        limit = min(limit, MAX_SEARCH_LIMIT)
+        raw_search = await self._provider.search_competitions(query)
+
+        errors = map_errors(raw_search.get("errors", []))
+        if errors:
+            raise ExternalAPIError(errors)
+
+        competitions = raw_search.get("response", [])
+        results: list[Competition] = []
+
+        for c in competitions:
+            dto = map_competition_response(c)
+            if dto is not None:
+                results.append(dto)
+
+        return results[:limit]
+
+    async def unified_search(self, query: str):
+        players_task = self.search_players(query)
+        teams_task = self.search_teams(query)
+        competitions_task = self.search_competitions(query)
+
+        players, teams, competitions = await gather(
+            players_task, teams_task, competitions_task
+        )
+
+        return {
+            "players": players,
+            "teams": teams,
+            "competitions": competitions,
+        }
+
+    # endregion
