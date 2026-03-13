@@ -7,7 +7,12 @@
     "settings": {
         "python-envs.pythonProjects": [
             {
-                "path": "client-ballwork",
+                "path": "server/app",
+                "envManager": "ms-python.python:venv",
+                "packageManager": "ms-python.python:pip"
+            },
+            {
+                "path": "server",
                 "envManager": "ms-python.python:venv",
                 "packageManager": "ms-python.python:pip"
             }

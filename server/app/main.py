@@ -1,5 +1,6 @@
 from contextlib import asynccontextmanager
 
+from sqlalchemy import text
 import uvicorn
 from app.core.settings import settings
 from app.db import engine
@@ -19,6 +20,8 @@ def get_stats_service() -> StatsService:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    with engine.connect() as conn:
+        conn.execute(text("SELECT 1"))
     yield
     engine.dispose()
 
