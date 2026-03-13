@@ -14,8 +14,10 @@ from .enums.event_type import EventType
 class NotificationEvent(Base):
     __tablename__ = "notification_event_digest"
     id: Mapped[int] = mapped_column(primary_key=True)
-    event_type: Mapped[EventType] = mapped_column(String(50))  # "goal", "assist", etc.
-    entity_type: Mapped[EntityType] = mapped_column()  # PLAYER, TEAM, COMPETITION
+    event_type: Mapped[EventType] = mapped_column(SQLEnum(EventType), nullable=False)
+    entity_type: Mapped[EntityType] = mapped_column(SQLEnum(EntityType), nullable=False)
     entity_id: Mapped[int] = mapped_column(nullable=False)
     payload: Mapped[dict] = mapped_column(JSON, nullable=False)
-    created_at: Mapped[datetime] = mapped_column()
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
