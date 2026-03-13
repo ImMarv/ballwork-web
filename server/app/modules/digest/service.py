@@ -2,12 +2,6 @@
 
 from datetime import datetime
 
-from sqlalchemy import and_, or_
-
-from server.app.modules.digest.repository.models.notification_event_digest import (
-    NotificationEvent,
-)
-
 from .email.email_service import EmailSendError, SMTPEmailService
 from .repository.digest_run_repo import DigestRunRepository
 from .repository.event_repo import EventRepository
@@ -69,25 +63,8 @@ class DigestService:
                 )
 
     def _filter_events(self, subscriptions):
-        """Get events matching subscriber's subscriptions via database join."""
-
-        if not subscriptions:
-            return []
-
-        # Build query with OR conditions for each subscription
-        conditions = [
-            and_(
-                NotificationEvent.entity_type == sub.entity_type,
-                NotificationEvent.entity_id == sub.entity_id,
-            )
-            for sub in subscriptions
-        ]
-
-        return (
-            self.event_repo.session.query(NotificationEvent)
-            .filter(or_(*conditions))
-            .all()
-        )
+        """Get events matching subscriber's subscriptions."""
+        return self.event_repo.get_events_for_subscriptions(subscriptions)
 
     def _build_digest(self, events) -> str:
         lines = ["Hello,", "", "Here are your updates:", ""]
