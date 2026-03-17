@@ -9,7 +9,7 @@ import app.modules.stats.models.db.dbmodels
 from alembic import context
 from app.core.settings import settings
 from app.db_base.base import Base
-from app.modules.digest.models.db import (
+from app.modules.digest.repository.models import (
     digest_run_digest,
     notification_event_digest,
     subscriber,
