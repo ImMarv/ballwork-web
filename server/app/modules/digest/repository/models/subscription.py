@@ -21,7 +21,9 @@ class Subscription(Base):
     )
 
     entity_id: Mapped[int] = mapped_column(index=True)
-    entity_type: Mapped[EntityType] = mapped_column(Enum(EntityType, name="entity_type_enum"), nullable=False)
+    entity_type: Mapped[EntityType] = mapped_column(
+        Enum(EntityType, name="entity_type_enum"), nullable=False
+    )
     target_type: Mapped[str] = mapped_column(String(20), nullable=False)
 
     # Scheduler fields
