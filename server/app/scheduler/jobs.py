@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
+import json
 import logging
-from collections.abc import Iterable
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
@@ -57,28 +57,8 @@ def _resolve_event_type(subscription: Subscription) -> EventType | None:
 
 
 def _get_due_subscriptions(subscription_repo: Any, now: datetime) -> list[Subscription]:
-    """Get due subscriptions using repository API or SQLAlchemy fallback."""
-    get_due = getattr(subscription_repo, "get_due_subscriptions", None)
-    if callable(get_due):
-        due = get_due(now)
-        if isinstance(due, list):
-            return due
-        if isinstance(due, Iterable):
-            return list(due)
-        raise TypeError("get_due_subscriptions(now) must return an iterable")
-
-    session = getattr(subscription_repo, "session", None)
-    if session is None:
-        raise AttributeError(
-            "Subscription repository must expose get_due_subscriptions(now) or session"
-        )
-
-    return (
-        session.query(Subscription)
-        .filter(Subscription.next_run <= now)
-        .order_by(Subscription.next_run.asc())
-        .all()
-    )
+    """Get due subscriptions from repository API."""
+    return list(subscription_repo.get_due_subscriptions(now))
 
 
 def _save_events(event_repo: Any, events: list[NotificationEvent]) -> None:
@@ -92,6 +72,52 @@ def _save_events(event_repo: Any, events: list[NotificationEvent]) -> None:
         event_repo.add(event)
 
 
+def _subscription_window_start(subscription: Subscription) -> datetime:
+    """Compute idempotency window start for a subscription run."""
+    if subscription.last_run is not None:
+        return subscription.last_run
+    return subscription.createdAt
+
+
+def _event_exists_for_window(
+    event_repo: Any,
+    subscription: Subscription,
+    event_type: EventType,
+    start: datetime,
+    end: datetime,
+) -> bool:
+    """Check if this subscription already produced events in the current run window."""
+    exists_event = getattr(event_repo, "exists_event_in_window", None)
+    if not callable(exists_event):
+        return False
+
+    return bool(
+        exists_event(
+            entity_type=subscription.entity_type,
+            entity_id=subscription.entity_id,
+            event_type=event_type,
+            start=start,
+            end=end,
+        )
+    )
+
+
+def _dedupe_snapshots(snapshots: list[Any]) -> list[Any]:
+    """Drop duplicate snapshots before insert to avoid duplicated payload rows."""
+    seen: set[str] = set()
+    deduped: list[Any] = []
+
+    for snapshot in snapshots:
+        payload = _serialize_payload(snapshot)
+        key = json.dumps(payload, sort_keys=True, default=str)
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(snapshot)
+
+    return deduped
+
+
 def _mark_subscription_ran(
     subscription_repo: Any,
     subscription: Subscription,
@@ -102,19 +128,23 @@ def _mark_subscription_ran(
     subscription.last_run = now
     subscription.next_run = now + timedelta(days=freq_days)
 
+    mark_run = getattr(subscription_repo, "mark_subscription_run", None)
+    if callable(mark_run):
+        mark_run(
+            subscription_id=subscription.id,
+            last_run=subscription.last_run,
+            next_run=subscription.next_run,
+        )
+        return
+
     update = getattr(subscription_repo, "update", None)
     if callable(update):
         update(subscription)
         return
 
-    session = getattr(subscription_repo, "session", None)
-    if session is None:
-        raise AttributeError(
-            "Subscription repository must expose update(subscription) or session"
-        )
-
-    session.merge(subscription)
-    session.commit()
+    raise AttributeError(
+        "Subscription repository must expose mark_subscription_run(...) or update(subscription)"
+    )
 
 
 async def _fetch_subscription_snapshot(
@@ -163,11 +193,28 @@ async def ingest_due_subscriptions_job(
                 _mark_subscription_ran(subscription_repo, subscription, current)
                 continue
 
+            window_start = _subscription_window_start(subscription)
+            if _event_exists_for_window(
+                event_repo=event_repo,
+                subscription=subscription,
+                event_type=event_type,
+                start=window_start,
+                end=current,
+            ):
+                LOGGER.info(
+                    "Skipping subscription %s: duplicate window already ingested",
+                    subscription.id,
+                )
+                _mark_subscription_ran(subscription_repo, subscription, current)
+                continue
+
             snapshots = await _fetch_subscription_snapshot(
                 stats_service=stats_service,
                 subscription=subscription,
                 season=season,
             )
+
+            snapshots = _dedupe_snapshots(snapshots)
 
             events = [
                 NotificationEvent(

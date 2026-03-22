@@ -7,6 +7,8 @@ from sqlalchemy import and_, or_
 from sqlalchemy.orm import Session
 
 from .models.digest_run_digest import DigestRun
+from .models.enums.entity_type import EntityType
+from .models.enums.event_type import EventType
 from .models.notification_event_digest import NotificationEvent
 from .models.subscriber import Subscriber
 from .models.subscription import Subscription
@@ -39,6 +41,37 @@ class SQLEventRepository:
         self.session.commit()
         self.session.refresh(event)
         return event
+
+    def add_many(self, events: list[NotificationEvent]) -> list[NotificationEvent]:
+        """Add many events in one transaction."""
+        if not events:
+            return []
+
+        self.session.add_all(events)
+        self.session.commit()
+        for event in events:
+            self.session.refresh(event)
+        return events
+
+    def exists_event_in_window(
+        self,
+        entity_type: EntityType,
+        entity_id: int,
+        event_type: EventType,
+        start: datetime,
+        end: datetime,
+    ) -> bool:
+        """Check if at least one event already exists in a given time window."""
+        existing = (
+            self.session.query(NotificationEvent.id)
+            .filter(NotificationEvent.entity_type == entity_type)
+            .filter(NotificationEvent.entity_id == entity_id)
+            .filter(NotificationEvent.event_type == event_type)
+            .filter(NotificationEvent.created_at >= start)
+            .filter(NotificationEvent.created_at <= end)
+            .first()
+        )
+        return existing is not None
 
     def get_events_for_subscriptions(
         self, subscriptions: List[Subscription]
@@ -134,6 +167,32 @@ class SQLSubscriptionRepository:
     def get_subscriptions_from(self, subscriber_id: int) -> list[Subscription]:
         """Get subscriptions from a subscriber (alias for get_by_subscriber_id)."""
         return self.get_by_subscriber_id(subscriber_id)
+
+    def get_due_subscriptions(self, now: datetime) -> list[Subscription]:
+        """Get subscriptions that are due to run."""
+        return (
+            self.session.query(Subscription)
+            .filter(Subscription.next_run <= now)
+            .order_by(Subscription.next_run.asc())
+            .all()
+        )
+
+    def mark_subscription_run(
+        self,
+        subscription_id: int,
+        last_run: datetime,
+        next_run: datetime,
+    ) -> Subscription | None:
+        """Set last_run and next_run for a subscription in one operation."""
+        subscription = self.get_by_id(subscription_id)
+        if subscription is None:
+            return None
+
+        subscription.last_run = last_run
+        subscription.next_run = next_run
+        self.session.commit()
+        self.session.refresh(subscription)
+        return subscription
 
     def add(self, subscription: Subscription) -> Subscription:
         """Add a new subscription."""
