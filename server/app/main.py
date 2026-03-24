@@ -1,17 +1,40 @@
 from contextlib import asynccontextmanager
 
-from sqlalchemy import text
 import uvicorn
-from app.core.settings import settings
-from app.db import engine
-from app.modules.stats.api import router as stats_router
-from app.modules.stats.providers.api_football import ApiFootballProvider
-from app.modules.stats.service import StatsService
+from apscheduler.triggers.cron import CronTrigger
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
+
+from .core.settings import settings
+from .db import SessionFactory, engine
+from .modules.digest.repository.implementations import (
+    SQLEventRepository,
+    SQLSubscriptionRepository,
+)
+from .modules.stats.api import router as stats_router
+from .modules.stats.providers.api_football import ApiFootballProvider
+from .modules.stats.service import StatsService
+from .scheduler.jobs import ingest_due_subscriptions_job
+from .scheduler.scheduler import Scheduler
 
 provider = ApiFootballProvider(api_key=settings.API_FOOTBALL_KEY)
 service = StatsService(provider=provider)
+scheduler = Scheduler()
+
+
+async def run_ingest_job():
+    db = SessionFactory()
+    try:
+        event_repo = SQLEventRepository(session=db)
+        subscription_repo = SQLSubscriptionRepository(session=db)
+        await ingest_due_subscriptions_job(
+            stats_service=service,
+            event_repo=event_repo,
+            subscription_repo=subscription_repo,
+        )
+    finally:
+        db.close()
 
 
 def get_stats_service() -> StatsService:
@@ -22,12 +45,19 @@ def get_stats_service() -> StatsService:
 async def lifespan(app: FastAPI):
     with engine.connect() as conn:
         conn.execute(text("SELECT 1"))
-    yield
-    engine.dispose()
+
+    scheduler.add_job(
+        run_ingest_job, CronTrigger(minute="*/5")
+    )  # every 5 minutes for testing
+    scheduler.start()
+    try:
+        yield
+    finally:
+        scheduler.shutdown()
+        engine.dispose()
 
 
 app = FastAPI(lifespan=lifespan)
-
 origins = ["http://localhost:5173"]
 
 app.add_middleware(
