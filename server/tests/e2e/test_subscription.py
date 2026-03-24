@@ -5,17 +5,17 @@ from datetime import timedelta
 from sqlalchemy.orm import Session
 
 from app.modules.digest.repository.implementations import (
-	SQLSubscriberRepository,
-	SQLSubscriptionRepository,
+    SQLSubscriberRepository,
+    SQLSubscriptionRepository,
 )
 from app.modules.digest.repository.models.enums.entity_type import EntityType
 from app.modules.digest.repository.models.subscription import Subscription
 
 from .helpers import (
-	E2ETracker,
-	build_test_email,
-	build_test_entity_id,
-	utc_now,
+    E2ETracker,
+    build_test_email,
+    build_test_entity_id,
+    utc_now,
 )
 
 

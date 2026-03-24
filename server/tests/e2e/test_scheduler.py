@@ -7,22 +7,22 @@ import pytest
 from sqlalchemy.orm import Session
 
 from app.modules.digest.repository.implementations import (
-	SQLEventRepository,
-	SQLSubscriberRepository,
-	SQLSubscriptionRepository,
+    SQLEventRepository,
+    SQLSubscriberRepository,
+    SQLSubscriptionRepository,
 )
 from app.modules.digest.repository.models.enums.entity_type import EntityType
 from app.modules.digest.repository.models.notification_event_digest import (
-	NotificationEvent,
+    NotificationEvent,
 )
 from app.modules.digest.repository.models.subscription import Subscription
 from app.scheduler.jobs import ingest_due_subscriptions_job
 
 from .helpers import (
-	E2ETracker,
-	build_test_email,
-	build_test_entity_id,
-	utc_now,
+    E2ETracker,
+    build_test_email,
+    build_test_entity_id,
+    utc_now,
 )
 
 

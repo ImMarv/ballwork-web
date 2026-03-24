@@ -12,7 +12,9 @@ from app.modules.digest.repository.implementations import (
     SQLSubscriptionRepository,
 )
 from app.modules.digest.repository.models.enums.entity_type import EntityType
-from app.modules.digest.repository.models.notification_event_digest import NotificationEvent
+from app.modules.digest.repository.models.notification_event_digest import (
+    NotificationEvent,
+)
 from app.modules.digest.repository.models.subscription import Subscription
 from app.modules.digest.service import DigestService
 from app.modules.stats.service import StatsService

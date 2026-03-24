@@ -38,7 +38,9 @@ def e2e_tracker(db_session: Session) -> E2ETracker:
     finally:
         if tracker.subscriber_ids:
             db_session.execute(
-                delete(DigestRun).where(DigestRun.subscriber_id.in_(tracker.subscriber_ids))
+                delete(DigestRun).where(
+                    DigestRun.subscriber_id.in_(tracker.subscriber_ids)
+                )
             )
             db_session.execute(
                 delete(Subscription).where(
