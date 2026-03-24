@@ -75,9 +75,7 @@ async def get_team(commons: Annotated[dict, Depends(params)]):
 
 
 @router.get("/search")
-async def unified_search(
-    commons: Annotated[dict, Depends(params)], query: str
-):
+async def unified_search(commons: Annotated[dict, Depends(params)], query: str):
     return await commons["service"].unified_search(query)
 
 
