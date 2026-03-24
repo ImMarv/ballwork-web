@@ -45,7 +45,11 @@ async def test_ingestion_job_smoke_end_to_end(test_session: Session):
     # ============ SETUP ============
 
     # Create subscriber
-    subscriber = Subscriber(email="test_smoke@example.com", isActive=True, createdAt=datetime.now(timezone.utc))
+    subscriber = Subscriber(
+        email="test_smoke@example.com",
+        isActive=True,
+        createdAt=datetime.now(timezone.utc),
+    )
     test_session.add(subscriber)
     test_session.commit()
     test_session.refresh(subscriber)
