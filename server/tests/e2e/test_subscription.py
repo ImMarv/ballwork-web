@@ -2,14 +2,13 @@ from __future__ import annotations
 
 from datetime import timedelta
 
-from sqlalchemy.orm import Session
-
 from app.modules.digest.repository.implementations import (
     SQLSubscriberRepository,
     SQLSubscriptionRepository,
 )
 from app.modules.digest.repository.models.enums.entity_type import EntityType
 from app.modules.digest.repository.models.subscription import Subscription
+from sqlalchemy.orm import Session
 
 from .helpers import (
     E2ETracker,

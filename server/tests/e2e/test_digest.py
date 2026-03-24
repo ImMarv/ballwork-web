@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from datetime import timedelta
 
-from sqlalchemy.orm import Session
-
 from app.modules.digest.repository.implementations import (
     SQLEventRepository,
     SQLSubscriberRepository,
@@ -16,6 +14,7 @@ from app.modules.digest.repository.models.notification_event_digest import (
 )
 from app.modules.digest.repository.models.subscription import Subscription
 from app.modules.digest.service import DigestService
+from sqlalchemy.orm import Session
 
 from .helpers import (
     E2ETracker,

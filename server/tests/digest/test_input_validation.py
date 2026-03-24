@@ -2,13 +2,13 @@
 
 import pytest
 
-from ...app.modules.digest.repository.models.notification_event_digest import (
+from app.modules.digest.repository.models.notification_event_digest import (
     EntityType,
     EventType,
     NotificationEvent,
 )
-from ...app.modules.digest.repository.models.subscriber import Subscriber
-from ...app.modules.digest.repository.models.subscription import Subscription
+from app.modules.digest.repository.models.subscriber import Subscriber
+from app.modules.digest.repository.models.subscription import Subscription
 from .mock_repo import (
     MockEventRepository,
     MockSubscriberRepository,

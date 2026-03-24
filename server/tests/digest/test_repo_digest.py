@@ -4,7 +4,7 @@ from datetime import datetime
 
 import pytest
 
-from ...app.modules.digest.repository.models.notification_event_digest import (
+from app.modules.digest.repository.models.notification_event_digest import (
     EntityType,
     EventType,
     NotificationEvent,

@@ -4,8 +4,6 @@ from datetime import timedelta
 from unittest.mock import AsyncMock
 
 import pytest
-from sqlalchemy.orm import Session
-
 from app.modules.digest.repository.implementations import (
     SQLEventRepository,
     SQLSubscriberRepository,
@@ -17,6 +15,7 @@ from app.modules.digest.repository.models.notification_event_digest import (
 )
 from app.modules.digest.repository.models.subscription import Subscription
 from app.scheduler.jobs import ingest_due_subscriptions_job
+from sqlalchemy.orm import Session
 
 from .helpers import (
     E2ETracker,

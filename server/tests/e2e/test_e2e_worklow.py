@@ -19,7 +19,6 @@ from app.modules.digest.repository.models.subscription import Subscription
 from app.modules.digest.service import DigestService
 from app.modules.stats.service import StatsService
 from app.scheduler.jobs import ingest_due_subscriptions_job
-
 from .helpers import E2ETracker, build_test_email, build_test_entity_id, utc_now
 
 

@@ -8,19 +8,19 @@ from unittest.mock import AsyncMock
 import pytest
 from sqlalchemy.orm import Session
 
-from ...app.db import SessionFactory
-from ...app.modules.digest.repository.implementations import (
+from app.db import SessionFactory
+from app.modules.digest.repository.implementations import (
     SQLEventRepository,
     SQLSubscriptionRepository,
 )
-from ...app.modules.digest.repository.models.enums.entity_type import EntityType
-from ...app.modules.digest.repository.models.enums.event_type import EventType
-from ...app.modules.digest.repository.models.notification_event_digest import (
+from app.modules.digest.repository.models.enums.entity_type import EntityType
+from app.modules.digest.repository.models.enums.event_type import EventType
+from app.modules.digest.repository.models.notification_event_digest import (
     NotificationEvent,
 )
-from ...app.modules.digest.repository.models.subscriber import Subscriber
-from ...app.modules.digest.repository.models.subscription import Subscription
-from ...app.scheduler.jobs import ingest_due_subscriptions_job
+from app.modules.digest.repository.models.subscriber import Subscriber
+from app.modules.digest.repository.models.subscription import Subscription
+from app.scheduler.jobs import ingest_due_subscriptions_job
 
 
 @pytest.fixture
