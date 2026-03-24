@@ -239,7 +239,7 @@ async def test_search_competitions_maps_data_properly():
             id=39,
             season=None,
             name="Premier League",
-            logo="https://media.api-sports.io/football/leagues/39.png",
+            logo="https://media.api-sports.io/football/leagues/2.png",
             country=Country(
                 code="GB",
                 name="England",
