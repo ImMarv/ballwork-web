@@ -4,16 +4,16 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from ...app.modules.digest.email.email_service import EmailSendError
-from ...app.modules.digest.repository.models.enums.digest_status import DigestStatus
-from ...app.modules.digest.repository.models.notification_event_digest import (
+from app.modules.digest.email.email_service import EmailSendError
+from app.modules.digest.repository.models.enums.digest_status import DigestStatus
+from app.modules.digest.repository.models.notification_event_digest import (
     EntityType,
     EventType,
     NotificationEvent,
 )
-from ...app.modules.digest.repository.models.subscriber import Subscriber
-from ...app.modules.digest.repository.models.subscription import Subscription
-from ...app.modules.digest.service import DigestService
+from app.modules.digest.repository.models.subscriber import Subscriber
+from app.modules.digest.repository.models.subscription import Subscription
+from app.modules.digest.service import DigestService
 from .mock_repo import (
     MockDigestRunRepository,
     MockEmailService,

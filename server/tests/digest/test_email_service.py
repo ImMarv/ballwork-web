@@ -2,7 +2,7 @@
 
 import pytest
 
-from ...app.modules.digest.email.email_service import EmailSendError
+from app.modules.digest.email.email_service import EmailSendError
 from .mock_repo import MockEmailService
 
 

@@ -45,11 +45,12 @@ def get_stats_service() -> StatsService:
 async def lifespan(app: FastAPI):
     with engine.connect() as conn:
         conn.execute(text("SELECT 1"))
-
-    scheduler.add_job(
-        run_ingest_job, CronTrigger(minute="*/5")
-    )  # every 5 minutes for testing
-    scheduler.start()
+    
+    if settings.RUN_SCHEDULER:
+        scheduler.add_job(
+            run_ingest_job, CronTrigger(minute="*/5")
+        )  # every 5 minutes for testing
+        scheduler.start()
     try:
         yield
     finally:
