@@ -51,7 +51,7 @@ async def lifespan(app: FastAPI):
             run_ingest_job, CronTrigger(minute="*/5")
         )  # every 5 minutes for testing
         scheduler.start()
-    try:0
+    try:
         yield
     finally:
         scheduler.shutdown()
