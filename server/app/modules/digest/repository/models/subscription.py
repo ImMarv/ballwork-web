@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import datetime
 
 from app.db_base.base import Base
-from sqlalchemy import DateTime, Enum, ForeignKey, Integer, String
+from sqlalchemy import DateTime, Enum, ForeignKey, Integer, String, func
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import text
 
@@ -47,4 +47,5 @@ class Subscription(Base):
         DateTime(timezone=True),
         nullable=False,
         server_default=text("CURRENT_TIMESTAMP"),
+        default=func.now,
     )

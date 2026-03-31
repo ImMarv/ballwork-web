@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from app.db_base.base import Base  # noqa: E0401
-from sqlalchemy import Boolean, DateTime, Integer, String
+from sqlalchemy import Boolean, DateTime, Integer, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import text
 
@@ -13,5 +13,5 @@ class Subscriber(Base):
     email: Mapped[str] = mapped_column(String(254), unique=True, index=True)
     isActive: Mapped[bool] = mapped_column(Boolean)
     createdAt: Mapped[DateTime] = mapped_column(
-        DateTime(timezone=True), server_default=text("CURRENT_TIMESTAMP")
+        DateTime(timezone=True), server_default=text("CURRENT_TIMESTAMP"), default=func.now
     )
