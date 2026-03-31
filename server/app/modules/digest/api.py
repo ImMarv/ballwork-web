@@ -1,15 +1,13 @@
 """Thin API layer for digest module."""
 
-from app.db import get_db
 from typing import Annotated
 
+from app.db import get_db
 from fastapi import APIRouter, Depends
 
-from server.app.modules.digest.repository.models.subscription import Subscription
-
-from .email.factory import build_email_service
-from .service import DigestService
 from .deps.get_digest_service import get_digest_service
+from .repository.models.subscription import Subscription
+from .service import DigestService
 
 router = APIRouter()
 

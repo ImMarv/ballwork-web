@@ -4,14 +4,14 @@ from app.db import get_db
 from fastapi import Depends
 from sqlalchemy.orm import Session
 
-from server.app.modules.digest.email.factory import build_email_service
-from server.app.modules.digest.repository.digest_run_repo import SQLDigestRunRepository
-from server.app.modules.digest.repository.event_repo import SQLEventRepository
-from server.app.modules.digest.repository.subscriber_repo import SQLSubscriberRepository
-from server.app.modules.digest.repository.subscription_repo import (
+from ..email.factory import build_email_service
+from ..repository.digest_run_repo import SQLDigestRunRepository
+from ..repository.event_repo import SQLEventRepository
+from ..repository.subscriber_repo import SQLSubscriberRepository
+from ..repository.subscription_repo import (
     SQLSubscriptionRepository,
 )
-from server.app.modules.digest.service import DigestService
+from ..service import DigestService
 
 
 def get_digest_service(db: Session = Depends(get_db)) -> DigestService:  # noqa: B008
