@@ -5,16 +5,18 @@ import uvicorn
 from apscheduler.triggers.cron import CronTrigger
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from sqlalchemy import inspect, text
+from sqlalchemy.exc import SQLAlchemyError
 
 from .core.settings import settings
 from .db import SessionFactory, engine
+from .modules.digest.api import router as digest_router
 from .modules.digest.repository.implementations import (
     SQLEventRepository,
     SQLSubscriptionRepository,
 )
 from .modules.stats.api import router as stats_router
-from .modules.digest.api import router as digest_router 
 from .modules.stats.providers.api_football import ApiFootballProvider
 from .modules.stats.service import StatsService
 from .scheduler.jobs import ingest_due_subscriptions_job
@@ -91,6 +93,19 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint for readiness probes (k6, load balancers, etc.)."""
+    try:
+        with engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+        return {"status": "ok"}
+    except SQLAlchemyError:
+        LOGGER.exception("Health check failed")
+        return JSONResponse(status_code=503, content={"status": "error"})
+
 
 app.include_router(stats_router, prefix="/stats")
 app.include_router(digest_router, prefix="/digest")
