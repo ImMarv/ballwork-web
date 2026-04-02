@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     EMAIL_USE_TLS: bool = Field(default=False)
 
     model_config = {
-        "env_file": ".env",
+        "env_file": ".env.local",
         "env_file_encoding": "utf-8",
         "extra": "ignore",
     }
