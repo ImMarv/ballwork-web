@@ -3,21 +3,22 @@ Service layer of the application.
 """
 
 from asyncio import gather
+
 from .mappers.mappers import (
     map_competition_response,
     map_country_response,
     map_errors,
     map_player_response,
-    map_team_response,
     map_player_search,
+    map_team_response,
     map_team_search,
 )
 from .models.dto.competition import Competition
 from .models.dto.country import Country
+from .models.dto.player_profile import PlayerProfile
 from .models.dto.player_statistics import PlayerStatistics
 from .models.dto.team_stats import Team
 from .models.dto.team_summary import TeamSummary
-from .models.dto.player_profile import PlayerProfile
 from .providers.api_football import ExternalAPIError
 from .providers.ifootball_provider import FootballDataProvider
 
