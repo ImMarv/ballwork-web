@@ -3,16 +3,15 @@
 from datetime import date, datetime
 from typing import List, Optional
 
-from server.app.modules.digest.email.email_service import SMTPEmailService
-
-from ...app.modules.digest.repository.models.digest_run_digest import DigestRun
-from ...app.modules.digest.repository.models.notification_event_digest import (
-    NotificationEvent,
+from app.modules.digest.email.email_service import SMTPEmailService
+from app.modules.digest.repository.models.digest_run_digest import DigestRun
+from app.modules.digest.repository.models.notification_event_digest import (
     EntityType,
     EventType,
+    NotificationEvent,
 )
-from ...app.modules.digest.repository.models.subscriber import Subscriber
-from ...app.modules.digest.repository.models.subscription import Subscription
+from app.modules.digest.repository.models.subscriber import Subscriber
+from app.modules.digest.repository.models.subscription import Subscription
 
 
 class MockEventRepository:
@@ -229,7 +228,7 @@ class MockEmailService(SMTPEmailService):
     def send_email(self, to: str, subject: str, body: str) -> None:
         """Mock sending email."""
         if self.should_fail:
-            from ...app.modules.digest.email.email_service import EmailSendError
+            from app.modules.digest.email.email_service import EmailSendError
 
             raise EmailSendError(f"Failed to send email to {to}")
 

@@ -7,6 +7,11 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
+    ## Environments
+    ENV: str = Field(
+        default="dev", description="Environment to run in (e.g. dev, test, prod)"
+    )
+    ## Required settings
     API_FOOTBALL_KEY: str = Field(...)
     DATABASE_URL: str = Field(...)
     EMAIL_HOST: str = Field(default="localhost")

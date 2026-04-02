@@ -4,13 +4,13 @@ from datetime import datetime
 
 import pytest
 
-from ...app.modules.digest.repository.models.notification_event_digest import (
-    NotificationEvent,
+from app.modules.digest.repository.models.notification_event_digest import (
     EntityType,
     EventType,
+    NotificationEvent,
 )
-from ...app.modules.digest.repository.models.subscriber import Subscriber
-from ...app.modules.digest.repository.models.subscription import Subscription
+from app.modules.digest.repository.models.subscriber import Subscriber
+from app.modules.digest.repository.models.subscription import Subscription
 from .mock_repo import (
     MockDigestRunRepository,
     MockEventRepository,
