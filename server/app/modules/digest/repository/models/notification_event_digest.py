@@ -2,10 +2,10 @@ from datetime import datetime
 from enum import Enum
 
 from app.db_base.base import Base
-from sqlalchemy import JSON, DateTime, String, func
+from sqlalchemy import JSON, DateTime, String
 from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy.sql import func, text
+from sqlalchemy.sql import text
 
 from .enums.entity_type import EntityType
 from .enums.event_type import EventType
@@ -25,6 +25,5 @@ class NotificationEvent(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=text("CURRENT_TIMESTAMP"),
-        default=func.now,
         nullable=False,
     )
