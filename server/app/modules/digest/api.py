@@ -2,8 +2,8 @@
 
 from typing import Annotated
 
-from app.db import get_db
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel, EmailStr
 
 from .deps.get_digest_service import get_digest_service
 from .repository.models.subscription import Subscription
@@ -12,100 +12,111 @@ from .service import DigestService
 router = APIRouter()
 
 
+class SubscriberCreateRequest(BaseModel):
+    email: EmailStr
+
+
+class SubscriberDeleteRequest(BaseModel):
+    subscriber_id: int
+
+
+class SubscriptionCreateRequest(BaseModel):
+    subscriber_id: int
+    entity_id: int
+    entity_type: str
+    target_type: str
+    email: EmailStr | None = None
+
+
+class SubscriptionDeleteRequest(BaseModel):
+    subscription_id: int
+
+
 @router.post("/digest/subscriber")
 def create_subscriber(
-    email: str,
-    digest: DigestService = Depends(get_digest_service),
+    payload: SubscriberCreateRequest,
+    digest: Annotated[DigestService, Depends(get_digest_service)],
 ):
-    """Endpoint to create a subscriber for the digest.
-
-    Args:
-        email (str): The email address to subscribe to the digest.
-        digest (DigestService, optional): The digest service. Defaults to Depends(get_digest_service).
-    Returns:
-        dict: A dictionary with the subscription status.
-    """
-    try:
-        digest.subscriber_repo.create(email)
-        return {"status": "success", "message": f"{email} subscribed to the digest."}
-    except Exception as e:
-        return {"status": "error", "message": str(e)}
+    digest.subscriber_repo.create(payload.email)
+    return {
+        "status": "success",
+        "message": f"{payload.email} subscribed to the digest.",
+    }
 
 
 @router.post("/digest/unsubscribe")
 def delete_subscriber(
-    id: int,
-    digest: DigestService = Depends(get_digest_service),
+    payload: SubscriberDeleteRequest,
+    digest: Annotated[DigestService, Depends(get_digest_service)],
 ):
-    """Endpoint to delete a subscriber for the digest.
+    deleted = digest.subscriber_repo.delete(payload.subscriber_id)
+    if not deleted:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Subscriber with ID {payload.subscriber_id} not found.",
+        )
 
-    Args:
-        id (int): The ID of the subscriber to delete.
-        digest (DigestService, optional): The digest service. Defaults to Depends(get_digest_service).
-    Returns:
-        dict: A dictionary with the unsubscription status.
-    """
-    try:
-        digest.subscriber_repo.delete(id)
-        email = digest.subscriber_repo.get_by_id(id)
-        return {
-            "status": "success",
-            "message": f"Email {email} with ID {id} unsubscribed and deleted from the digest.",
-        }
-    except Exception as e:
-        return {"status": "error", "message": str(e)}
+    return {
+        "status": "success",
+        "message": (
+            f"Subscriber with ID {payload.subscriber_id} unsubscribed "
+            "from the digest."
+        ),
+    }
 
 
 @router.post("/digest/subscription/add")
 def create_subscription(
-    subscriber_id: int,
-    entity_id: int,
-    entity_type: str,
-    target_type: str,
-    email: str,
-    digest: DigestService = Depends(get_digest_service),
+    payload: SubscriptionCreateRequest,
+    digest: Annotated[DigestService, Depends(get_digest_service)],
 ):
-    """Endpoint to create a subscription for the digest.
+    subscriber = digest.subscriber_repo.get_by_id(payload.subscriber_id)
 
-    Args:
-        email (str): The email address to subscribe to the digest.
-        digest (DigestService, optional): The digest service. Defaults to Depends(get_digest_service).
-    Returns:
-        dict: A dictionary with the subscription status.
-    """
-    try:
-        digest.subscription_repo.add(
-            subscription=Subscription(
-                subscriber_id=subscriber_id,
-                entity_id=entity_id,
-                entity_type=entity_type,
-                target_type=target_type,
+    if subscriber is None:
+        if payload.email is None:
+            raise HTTPException(
+                status_code=404,
+                detail=(
+                    f"Subscriber with ID {payload.subscriber_id} not found. "
+                    "Create the subscriber first or provide an email."
+                ),
             )
+
+        subscriber = digest.subscriber_repo.get_by_email(payload.email)
+        if subscriber is None:
+            subscriber = digest.subscriber_repo.create(payload.email)
+
+    digest.subscription_repo.add(
+        subscription=Subscription(
+            subscriber_id=subscriber.id,
+            entity_id=payload.entity_id,
+            entity_type=payload.entity_type,
+            target_type=payload.target_type,
         )
-        return {"status": "success", "message": f"{email} subscribed to the digest."}
-    except Exception as e:
-        return {"status": "error", "message": str(e)}
+    )
+
+    return {
+        "status": "success",
+        "message": f"{subscriber.email} subscribed to the digest.",
+    }
 
 
 @router.post("/digest/subscription/delete")
 def delete_subscription(
-    subscription_id: int,
-    digest: DigestService = Depends(get_digest_service),
+    payload: SubscriptionDeleteRequest,
+    digest: Annotated[DigestService, Depends(get_digest_service)],
 ):
-    """Endpoint to delete a subscription for the digest.
+    deleted = digest.subscription_repo.delete(payload.subscription_id)
+    if not deleted:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Subscription with ID {payload.subscription_id} not found.",
+        )
 
-    Args:
-        subscription_id (int): The ID of the subscription to delete.
-        digest (DigestService, optional): The digest service. Defaults to Depends(get_digest_service).
-    Returns:
-        dict: A dictionary with the unsubscription status.
-    """
-    try:
-        digest.subscription_repo.delete(subscription_id)
-        email = digest.subscriber_repo.get_by_id(subscription_id)
-        return {
-            "status": "success",
-            "message": f"Email {email} with ID {subscription_id} unsubscribed from the digest.",
-        }
-    except Exception as e:
-        return {"status": "error", "message": str(e)}
+    return {
+        "status": "success",
+        "message": (
+            f"Subscription {payload.subscription_id} unsubscribed "
+            "from the digest."
+        ),
+    }
