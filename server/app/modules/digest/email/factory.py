@@ -1,7 +1,7 @@
 # app/modules/email/factory.py
 
-from app.core.settings import settings
-from app.modules.digest.email.email_service import SMTPEmailService
+from ....core.settings import settings
+from .email_service import SMTPEmailService
 
 
 def build_email_service() -> SMTPEmailService:
