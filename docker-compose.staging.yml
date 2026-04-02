@@ -1,0 +1,25 @@
+# Staging environment configuration
+# Run with: docker-compose -f docker-compose.yml -f docker-compose.staging.yml up
+#
+# This replicates production-like behavior (no hot reload, no volumes)
+# but runs locally for testing before pushing to GCP
+
+version: "3.9"
+
+services:
+  api:
+    build:
+      context: ./server
+      dockerfile: ballwork.dockerfile
+    container_name: ballwork-api-staging
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - ENV=staging
+    env_file:
+      - .env.staging
+    depends_on:
+      db:
+        condition: service_healthy

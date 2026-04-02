@@ -141,7 +141,7 @@ async def get_competition(commons: Annotated[dict, Depends(params)]):
 
 
 @router.get("/country")
-async def get_country(commons: Annotated[dict, Depends(params)]):
+async def get_country(commons: Annotated[dict, Depends(params)], country_code: str):
     """Get country data from API-Football
 
     Args:
@@ -150,4 +150,4 @@ async def get_country(commons: Annotated[dict, Depends(params)]):
     Returns:
         Raw JSON data of country
     """
-    return await commons["service"].get_country(commons["country_code"])
+    return await commons["service"].get_country(country_code)

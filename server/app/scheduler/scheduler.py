@@ -10,8 +10,8 @@ class Scheduler:
     def start(self):
         self.scheduler.start()
 
-    def add_job(self, func, trigger: CronTrigger, *args, **kwargs):
-        self.scheduler.add_job(func, trigger, args=args, kwargs=kwargs)
+    def add_job(self, func, trigger, **job_kwargs):
+        self.scheduler.add_job(func, trigger, **job_kwargs)
 
     def shutdown(self):
         self.scheduler.shutdown()

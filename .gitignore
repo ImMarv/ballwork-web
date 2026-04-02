@@ -137,6 +137,13 @@ celerybeat.pid
 # Environments
 .env
 .env*
+=======
+.env.local
+.env.dev
+.env.staging
+.env.prod
+!.env.example           # Commit template; developers copy it to .env.dev, .env.staging, etc.
+>>>>>>> 31fc49ebb858f8403677592ae79942c35c043940
 .envrc
 .venv
 env/
