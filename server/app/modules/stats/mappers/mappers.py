@@ -70,7 +70,7 @@ def map_player_response(p: dict) -> PlayerStatistics | None:
     stats = p.get("statistics", [])
 
     if not stats or not player_info:
-        return None  # TODO: Handle missing stats appropriately
+        return None
 
     stats = stats[0]
     dob = _normalize_birth_date(player_info.get("birth", {}).get("date"))
