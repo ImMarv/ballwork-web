@@ -1,9 +1,6 @@
 # Local development overrides
 # Auto-loaded by Docker Compose unless explicitly ignored
 # Adds the FastAPI app service and uses .env.dev for configuration
-
-version: "3.9"
-
 services:
   api:
     build:
@@ -26,6 +23,5 @@ services:
     command: >
       sh -c "
       cd /app &&
-      pip install -e . &&
       uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
       "
