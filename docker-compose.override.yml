@@ -1,0 +1,27 @@
+# Local development overrides
+# Auto-loaded by Docker Compose unless explicitly ignored
+# Adds the FastAPI app service and uses .env.dev for configuration
+services:
+  api:
+    build:
+      context: ./server
+      dockerfile: ballwork.dockerfile
+    container_name: ballwork-api-dev
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - ENV=development
+    env_file:
+      - .env.dev
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./server/app:/app/app  # Hot reload for local development
+    command: >
+      sh -c "
+      cd /app &&
+      uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
+      "

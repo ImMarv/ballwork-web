@@ -14,21 +14,15 @@ class Settings(BaseSettings):
     ## Required settings
     API_FOOTBALL_KEY: str = Field(...)
     DATABASE_URL: str = Field(...)
-    RUN_SCHEDULER: bool = Field(
-        default=True, description="Whether to run the scheduler"
-    )
-
-    # Optional email settings
-    EMAIL_HOST: str | None = Field(default=None, description="SMTP server host")
-    EMAIL_PORT: int = Field(default=1025, description="SMTP server port")
-    EMAIL_USER: str | None = Field(default=None, description="SMTP server username")
-    EMAIL_PASSWORD: str | None = Field(default=None, description="SMTP server password")
-    EMAIL_TEST: str | None = Field(
-        default="test@ballwork.dev", description="Test email address to send digests to"
-    )
+    EMAIL_HOST: str = Field(default="localhost")
+    EMAIL_PORT: int = Field(default=1025)
+    EMAIL_USER: str | None = Field(default=None)
+    EMAIL_PASSWORD: str | None = Field(default=None)
+    EMAIL_FROM: str = Field(default="noreply@ballwork.dev")
+    EMAIL_USE_TLS: bool = Field(default=False)
 
     model_config = {
-        "env_file": ".env",
+        "env_file": ".env.local",
         "env_file_encoding": "utf-8",
         "extra": "ignore",
     }

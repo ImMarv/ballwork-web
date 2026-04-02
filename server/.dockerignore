@@ -1,0 +1,37 @@
+# Python cache/artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Tool caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Local env/secrets
+.env
+.env.*
+
+# VCS/editor
+.git/
+.gitignore
+.vscode/
+.idea/
+
+# Local build/test outputs
+htmlcov/
+.coverage
+.coverage.*
+
+# Keep test code out of production images
+tests/
+
+# OS junk
+.DS_Store
+Thumbs.db

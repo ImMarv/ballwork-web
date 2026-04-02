@@ -1,13 +1,37 @@
 """Mappers for converting API responses to domain models."""
 
+from datetime import date
+
 from ..models.dto.api_error import APIError
 from ..models.dto.competition import Competition
 from ..models.dto.country import Country
 from ..models.dto.home_away import HomeAway
+from ..models.dto.player_profile import PlayerProfile
 from ..models.dto.player_statistics import PlayerStatistics
 from ..models.dto.team_stats import Team
 from ..models.dto.team_summary import TeamSummary
-from ..models.dto.player_profile import PlayerProfile
+
+
+def _normalize_birth_date(value: str | None) -> date | None:
+    """Normalize provider date strings such as '1984-9-1' into date objects."""
+    if not value:
+        return None
+
+    try:
+        return date.fromisoformat(value)
+    except ValueError:
+        parts = value.split("-")
+        if len(parts) != 3:
+            return None
+
+        year, month, day = parts
+        if not (year.isdigit() and month.isdigit() and day.isdigit()):
+            return None
+
+        try:
+            return date(int(year), int(month), int(day))
+        except ValueError:
+            return None
 
 
 def map_errors(errors: list | dict) -> list[APIError]:
@@ -46,15 +70,18 @@ def map_player_response(p: dict) -> PlayerStatistics | None:
     stats = p.get("statistics", [])
 
     if not stats or not player_info:
-        return None  # TODO: Handle missing stats appropriately
+        return None
 
     stats = stats[0]
+    dob = _normalize_birth_date(player_info.get("birth", {}).get("date"))
+    if dob is None:
+        return None
 
     return PlayerStatistics(
         id=player_info.get("id"),
         name=player_info.get("name"),
         season=stats.get("league", {}).get("season"),
-        dob=player_info.get("birth", {}).get("date"),
+        dob=dob,
         photo=player_info.get("photo"),
         age=player_info.get("age"),
         nationality=player_info.get("nationality"),
@@ -158,7 +185,7 @@ def map_player_search(p: dict) -> PlayerProfile | None:
         name=player_info.get("name"),
         firstname=player_info.get("firstname"),
         lastname=player_info.get("lastname"),
-        dob=player_info.get("birth", {}).get("date"),
+        dob=_normalize_birth_date(player_info.get("birth", {}).get("date")),
         age=player_info.get("age"),
         photo=player_info.get("photo"),
         position=player_info.get("position"),

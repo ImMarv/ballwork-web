@@ -135,7 +135,12 @@ celerybeat.pid
 *.sage.py
 
 # Environments
+.env
+.env.local
 .env.dev
+.env.staging
+.env.prod
+!.env.example           # Commit template; developers copy it to .env.dev, .env.staging, etc.
 .envrc
 .venv
 env/
@@ -206,3 +211,4 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+DOCKER_COMPOSE_COMMANDS.sh

@@ -168,11 +168,11 @@ class SQLSubscriptionRepository:
         """Get subscriptions from a subscriber (alias for get_by_subscriber_id)."""
         return self.get_by_subscriber_id(subscriber_id)
 
-    def get_due_subscriptions(self, now: datetime) -> list[Subscription]:
+    def get_due_subscriptions(self, current_time: datetime) -> list[Subscription]:
         """Get subscriptions that are due to run."""
         return (
             self.session.query(Subscription)
-            .filter(Subscription.next_run <= now)
+            .filter(Subscription.next_run <= current_time)
             .order_by(Subscription.next_run.asc())
             .all()
         )
