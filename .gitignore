@@ -135,12 +135,8 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
-.env.local
-.env.dev
-.env.staging
-.env.prod
-!.env.example           # Commit template; developers copy it to .env.dev, .env.staging, etc.
+.env*
+.!env.example
 .envrc
 .venv
 env/
