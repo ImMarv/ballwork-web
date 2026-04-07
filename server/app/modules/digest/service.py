@@ -24,7 +24,7 @@ class DigestService:
         self.subscriber_repo = subscriber_repo
         self.digest_run_repo = digest_run_repo
 
-    def run_digest(self, start: datetime, end: datetime) -> None:
+    async def run_digest(self, start: datetime, end: datetime) -> None:
         subscribers = self.subscriber_repo.get_all_active()
 
         for subscriber in subscribers:
@@ -61,6 +61,42 @@ class DigestService:
                 self.digest_run_repo.add_run(
                     subscriber_id=subscriber.id, period_start=start, status=status
                 )
+
+    async def run_single_digest(
+        self, subscriber_id: int, start: datetime, end: datetime
+    ) -> None:
+        subscriber = self.subscriber_repo.get_by_id(subscriber_id)
+        if not subscriber:
+            print(f"Subscriber with ID {subscriber_id} not found.")
+            return
+
+        subscriptions = self.subscription_repo.get_subscriptions_from(subscriber.id)
+        relevant_events = self._filter_events(subscriptions)
+        relevant_events = [e for e in relevant_events if start <= e.created_at <= end]
+
+        if not relevant_events:
+            print(
+                f"No relevant events for subscriber {subscriber.email} in the given period."
+            )
+            return
+
+        status = "PARTIAL"
+        try:
+            body = self._build_digest(relevant_events)
+            self.email_service.send_email(
+                to=subscriber.email, subject="Your Football Digest", body=body
+            )
+            status = "PASSED"
+        except EmailSendError as e:
+            status = "FAILED"
+            print(f"Failed to send digest to {subscriber.email}: {e}")
+        except Exception as e:
+            status = "FAILED"
+            print(f"Unexpected error sending digest to {subscriber.email}: {e}")
+        finally:
+            self.digest_run_repo.add_run(
+                subscriber_id=subscriber.id, period_start=start, status=status
+            )
 
     def _filter_events(self, subscriptions):
         """Get events matching subscriber's subscriptions."""
