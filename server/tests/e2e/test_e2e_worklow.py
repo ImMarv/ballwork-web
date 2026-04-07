@@ -135,7 +135,7 @@ async def test_full_backend_workflow_search_to_email(
         email_service=email_service,
     )
 
-    digest_service.run_digest(
+    await digest_service.run_digest(
         start=now - timedelta(hours=1),
         end=utc_now() + timedelta(hours=1),
     )

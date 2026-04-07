@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from datetime import timedelta
 
+import pytest
+
 from app.modules.digest.repository.implementations import (
     SQLEventRepository,
     SQLSubscriberRepository,
@@ -46,7 +48,8 @@ class InMemoryDigestRunRepository:
         )
 
 
-def test_digest_stage_sends_email_and_records_run(
+@pytest.mark.asyncio
+async def test_digest_stage_sends_email_and_records_run(
     db_session: Session,
     e2e_tracker: E2ETracker,
 ):
@@ -93,7 +96,7 @@ def test_digest_stage_sends_email_and_records_run(
 
     start = utc_now() - timedelta(hours=2)
     end = utc_now() + timedelta(hours=2)
-    digest_service.run_digest(start=start, end=end)
+    await digest_service.run_digest(start=start, end=end)
 
     assert len(email_service.sent) == 1
     assert email_service.sent[0]["to"] == subscriber.email
