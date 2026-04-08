@@ -3,10 +3,9 @@ In charge of wiring the local API with the provider
 """
 
 # stats/deps.py
+from app.db import get_db
 from fastapi import Depends
 from sqlalchemy.orm import Session
-
-from app.db import get_db
 
 from ...core.settings import settings
 from ..stats.providers.api_football import ApiFootballProvider
