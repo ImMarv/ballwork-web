@@ -1,5 +1,6 @@
-"""Concerns the implementation of the StatsRepository interface."""
+"""Contracts for stats cache repositories."""
 
+from datetime import datetime
 from typing import Optional, Protocol
 
 from sqlalchemy.orm import Session
@@ -7,15 +8,22 @@ from sqlalchemy.orm import Session
 from .models.db.dbmodels import EntityCache
 
 
-class SQLStatsCacheRepository(Protocol):
-    """SQLAlchemy implementation of StatsCacheRepository."""
+class StatsCacheRepository(Protocol):
+    """Contract for stats cache repositories."""
 
-    class SQLStatsCacheRepository(Protocol):
-        """Contract for stats cache repositories."""
+    session: Session
 
-        session: Session  # explicit protocol attribute
+    def get(self, cache_key: str) -> Optional[EntityCache]: ...
 
-        def add(self, cache_key: str, value: str) -> EntityCache: ...
-        def get(self, cache_key: str) -> Optional[EntityCache]: ...
-        def delete(self, cache_key: str) -> None: ...
-        def clear_expired(self) -> None: ...
+    def upsert(
+        self,
+        cache_key: str,
+        entity_type: str,
+        entity_id: int,
+        payload: str,
+        expires_at: datetime,
+    ) -> EntityCache: ...
+
+    def delete(self, cache_key: str) -> None: ...
+
+    def clear_expired(self, now: datetime | None = None) -> int: ...
