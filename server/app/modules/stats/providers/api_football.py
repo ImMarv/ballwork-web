@@ -10,7 +10,7 @@ import httpx
 from dotenv import load_dotenv
 
 from ..mappers.mappers import map_errors
-from ..models.dto.api_error import APIError
+from ..repository.models.dto.api_error import APIError
 from .ifootball_provider import FootballDataProvider
 
 
