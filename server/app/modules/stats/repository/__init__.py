@@ -1,0 +1,1 @@
+"""Stats repository package."""

@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import date, datetime
 
 from app.db_base.base import Base
-from sqlalchemy import Date, ForeignKey, Integer, String, DateTime
+from sqlalchemy import Date, ForeignKey, Integer, String, DateTime, JSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
@@ -88,5 +88,5 @@ class EntityCache(Base):
     cache_key: Mapped[str] = mapped_column(String(64), unique=True, index=True)  # e.g., "PLAYER_12345"
     entity_type: Mapped[str] = mapped_column(String(32)) # e.g., "PLAYER", "TEAM"
     entity_id: Mapped[int] = mapped_column(Integer) # External ID
-    payload: Mapped[dict] = mapped_column(String)  # Store as JSON string
+    payload: Mapped[dict] = mapped_column(JSON)  # Store as JSON string
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
