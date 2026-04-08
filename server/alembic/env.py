@@ -5,7 +5,6 @@ Environmental variables for alembic
 # pylint: disable=no-member
 from logging.config import fileConfig
 
-import app.modules.stats.models.db.dbmodels
 from alembic import context
 from app.core.settings import settings
 from app.db_base.base import Base
@@ -16,6 +15,14 @@ from app.modules.digest.repository.models import (
     subscription,
 )
 from sqlalchemy import engine_from_config, pool
+
+from app.modules.stats.repository.models.db.dbmodels import (
+    Competition,
+    Country,
+    EntityCache,
+    Player,
+    Team,
+)
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
