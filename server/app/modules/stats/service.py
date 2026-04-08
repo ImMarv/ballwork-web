@@ -5,7 +5,7 @@ Service layer of the application.
 import hashlib
 from asyncio import gather
 from datetime import datetime, timedelta, timezone
-from typing import Any
+from typing import Any, TypeVar, cast
 
 from .mappers.mappers import (
     map_competition_response,
@@ -29,6 +29,7 @@ from .repository.models.dto.team_summary import TeamSummary
 DEFAULT_SEARCH_LIMIT = 10
 MAX_SEARCH_LIMIT = 50
 DEFAULT_CACHE_TTL_SECONDS = 300
+TDto = TypeVar("TDto")
 
 
 class StatsService:
@@ -53,7 +54,7 @@ class StatsService:
         cache_key = self._hash_cache_key("player", player_id=player_id, year=year)
         cached_payload = self._read_cache(cache_key)
         if cached_payload is not None:
-            return cached_payload
+            return self._rehydrate_list(cached_payload, PlayerStatistics)
 
         raw_player = await self._provider.get_player(player_id, year)
 
@@ -84,7 +85,7 @@ class StatsService:
         )
         cached_payload = self._read_cache(cache_key)
         if cached_payload is not None:
-            return cached_payload
+            return self._rehydrate_list(cached_payload, Team)
 
         raw_team = await self._provider.get_team(team_id, competition_id, year)
         errors = map_errors(raw_team.get("errors", []))
@@ -106,7 +107,7 @@ class StatsService:
         cache_key = self._hash_cache_key("competition", competition_id=competition_id)
         cached_payload = self._read_cache(cache_key)
         if cached_payload is not None:
-            return cached_payload
+            return self._rehydrate_list(cached_payload, Competition)
 
         raw_competition = await self._provider.get_competition(competition_id)
 
@@ -131,7 +132,7 @@ class StatsService:
         cache_key = self._hash_cache_key("country", country_code=normalized_country)
         cached_payload = self._read_cache(cache_key)
         if cached_payload is not None:
-            return cached_payload
+            return self._rehydrate_list(cached_payload, Country)
 
         raw_country = await self._provider.get_country(normalized_country)
 
@@ -158,7 +159,7 @@ class StatsService:
         cache_key = self._hash_cache_key("search_players", query=query, limit=limit)
         cached_payload = self._read_cache(cache_key)
         if cached_payload is not None:
-            return cached_payload
+            return self._rehydrate_list(cached_payload, PlayerProfile)
 
         limit = min(limit, MAX_SEARCH_LIMIT)
         raw_search = await self._provider.search_players(query)
@@ -185,7 +186,7 @@ class StatsService:
         cache_key = self._hash_cache_key("search_teams", query=query, limit=limit)
         cached_payload = self._read_cache(cache_key)
         if cached_payload is not None:
-            return cached_payload
+            return self._rehydrate_list(cached_payload, TeamSummary)
 
         limit = min(limit, MAX_SEARCH_LIMIT)
         raw_search = await self._provider.search_teams(query)
@@ -216,7 +217,7 @@ class StatsService:
         )
         cached_payload = self._read_cache(cache_key)
         if cached_payload is not None:
-            return cached_payload
+            return self._rehydrate_list(cached_payload, Competition)
 
         limit = min(limit, MAX_SEARCH_LIMIT)
         raw_search = await self._provider.search_competitions(query)
@@ -315,4 +316,26 @@ class StatsService:
         if isinstance(data, datetime):
             return data.isoformat()
         return data
+
+    def _rehydrate_list(self, data: Any, dto_type: type[TDto]) -> list[TDto]:
+        """Rebuild DTO instances from cached JSON payloads."""
+        if not isinstance(data, list):
+            return []
+
+        results: list[TDto] = []
+        for item in data:
+            if isinstance(item, dto_type):
+                results.append(item)
+                continue
+
+            model_validate = getattr(dto_type, "model_validate", None)
+            if callable(model_validate):
+                results.append(cast(TDto, model_validate(item)))
+                continue
+
+            parse_obj = getattr(dto_type, "parse_obj", None)
+            if callable(parse_obj):
+                results.append(cast(TDto, parse_obj(item)))
+
+        return results
     # endregion
