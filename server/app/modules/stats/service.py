@@ -3,7 +3,6 @@ Service layer of the application.
 """
 
 import hashlib
-import json
 from asyncio import gather
 from datetime import datetime, timedelta, timezone
 from typing import Any
@@ -281,10 +280,7 @@ class StatsService:
         if expires_at <= now:
             return None
 
-        try:
-            return json.loads(cache_entry.payload)
-        except (TypeError, ValueError):
-            return None
+        return cache_entry.payload
 
     def _write_cache(
         self,
@@ -296,7 +292,7 @@ class StatsService:
         if self._cache_repo is None:
             return
 
-        payload = self._serialize_payload(data)
+        payload = self._to_cache_payload(data)
         expires_at = datetime.now(timezone.utc) + timedelta(
             seconds=self._cache_ttl_seconds
         )
@@ -308,15 +304,15 @@ class StatsService:
             expires_at=expires_at,
         )
 
-    def _serialize_payload(self, data: Any) -> str:
-        def _default_encoder(value: Any) -> Any:
-            if hasattr(value, "model_dump"):
-                return value.model_dump(mode="json")
-            if hasattr(value, "dict"):
-                return value.dict()
-            if isinstance(value, datetime):
-                return value.isoformat()
-            raise TypeError(f"Object of type {type(value).__name__} is not JSON serializable")
-
-        return json.dumps(data, default=_default_encoder)
+    def _to_cache_payload(self, data: Any) -> Any:
+        """Convert DTOs and nested structures into JSON-compatible objects."""
+        if hasattr(data, "model_dump"):
+            return data.model_dump(mode="json")
+        if isinstance(data, list):
+            return [self._to_cache_payload(item) for item in data]
+        if isinstance(data, dict):
+            return {key: self._to_cache_payload(value) for key, value in data.items()}
+        if isinstance(data, datetime):
+            return data.isoformat()
+        return data
     # endregion

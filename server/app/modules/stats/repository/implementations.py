@@ -1,7 +1,7 @@
 """Concrete SQLAlchemy implementations of repository interfaces."""
 
 from datetime import datetime, timezone
-from typing import Optional
+from typing import Any, Optional
 
 from sqlalchemy.orm import Session
 
@@ -20,7 +20,7 @@ class SQLStatsCacheRepository(StatsCacheRepository):
         cache_key: str,
         entity_type: str,
         entity_id: int,
-        payload: str,
+        payload: Any,
         expires_at: datetime,
     ) -> EntityCache:
         """Insert or update a cache entry by key."""

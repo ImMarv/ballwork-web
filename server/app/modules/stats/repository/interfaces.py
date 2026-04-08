@@ -1,7 +1,7 @@
 """Contracts for stats cache repositories."""
 
 from datetime import datetime
-from typing import Optional, Protocol
+from typing import Any, Optional, Protocol
 
 from sqlalchemy.orm import Session
 
@@ -20,7 +20,7 @@ class StatsCacheRepository(Protocol):
         cache_key: str,
         entity_type: str,
         entity_id: int,
-        payload: str,
+        payload: Any,
         expires_at: datetime,
     ) -> EntityCache: ...
 
