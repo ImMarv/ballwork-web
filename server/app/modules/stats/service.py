@@ -13,12 +13,12 @@ from .mappers.mappers import (
     map_team_response,
     map_team_search,
 )
-from .models.dto.competition import Competition
-from .models.dto.country import Country
-from .models.dto.player_profile import PlayerProfile
-from .models.dto.player_statistics import PlayerStatistics
-from .models.dto.team_stats import Team
-from .models.dto.team_summary import TeamSummary
+from .repository.models.dto.competition import Competition
+from .repository.models.dto.country import Country
+from .repository.models.dto.player_profile import PlayerProfile
+from .repository.models.dto.player_statistics import PlayerStatistics
+from .repository.models.dto.team_stats import Team
+from .repository.models.dto.team_summary import TeamSummary
 from .providers.api_football import ExternalAPIError
 from .providers.ifootball_provider import FootballDataProvider
 

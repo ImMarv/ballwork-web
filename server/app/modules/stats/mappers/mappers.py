@@ -2,14 +2,14 @@
 
 from datetime import date
 
-from ..models.dto.api_error import APIError
-from ..models.dto.competition import Competition
-from ..models.dto.country import Country
-from ..models.dto.home_away import HomeAway
-from ..models.dto.player_profile import PlayerProfile
-from ..models.dto.player_statistics import PlayerStatistics
-from ..models.dto.team_stats import Team
-from ..models.dto.team_summary import TeamSummary
+from ..repository.models.dto.api_error import APIError
+from ..repository.models.dto.competition import Competition
+from ..repository.models.dto.country import Country
+from ..repository.models.dto.home_away import HomeAway
+from ..repository.models.dto.player_profile import PlayerProfile
+from ..repository.models.dto.player_statistics import PlayerStatistics
+from ..repository.models.dto.team_stats import Team
+from ..repository.models.dto.team_summary import TeamSummary
 
 
 def _normalize_birth_date(value: str | None) -> date | None:
