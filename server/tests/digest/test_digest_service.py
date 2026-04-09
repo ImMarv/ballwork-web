@@ -74,7 +74,8 @@ def digest_service(
 class TestDigestServiceFullFlow:
     """Test the complete digest workflow."""
 
-    def test_full_digest_flow_single_subscriber(
+    @pytest.mark.asyncio
+    async def test_full_digest_flow_single_subscriber(
         self,
         digest_service,
         mock_subscriber_repo,
@@ -110,7 +111,7 @@ class TestDigestServiceFullFlow:
         # 4. Run digest
         start = datetime.now() - timedelta(days=1)
         end = datetime.now() + timedelta(days=1)
-        digest_service.run_digest(start, end)
+        await digest_service.run_digest(start, end)
 
         # 5. Verify email was sent
         assert len(mock_email_service.sent_emails) == 1
@@ -125,7 +126,8 @@ class TestDigestServiceFullFlow:
         assert run.subscriber_id == subscriber.id
         assert run.status == DigestStatus.PASSED
 
-    def test_digest_flow_multiple_subscribers(
+    @pytest.mark.asyncio
+    async def test_digest_flow_multiple_subscribers(
         self,
         digest_service,
         mock_subscriber_repo,
@@ -171,7 +173,7 @@ class TestDigestServiceFullFlow:
         # Run digest
         start = datetime.now() - timedelta(days=1)
         end = datetime.now() + timedelta(days=1)
-        digest_service.run_digest(start, end)
+        await digest_service.run_digest(start, end)
 
         # Verify both emails sent with correct content
         assert len(mock_email_service.sent_emails) == 2
@@ -180,7 +182,8 @@ class TestDigestServiceFullFlow:
         assert mock_email_service.sent_emails[1]["to"] == "user2@example.com"
         assert "Player 102 scored" in mock_email_service.sent_emails[1]["body"]
 
-    def test_digest_respects_date_range(
+    @pytest.mark.asyncio
+    async def test_digest_respects_date_range(
         self,
         digest_service,
         mock_subscriber_repo,
@@ -210,12 +213,13 @@ class TestDigestServiceFullFlow:
         # Run digest for recent dates only
         start = datetime(2024, 2, 1)
         end = datetime(2024, 2, 28)
-        digest_service.run_digest(start, end)
+        await digest_service.run_digest(start, end)
 
         # Verify no email sent (no events in range)
         assert len(mock_email_service.sent_emails) == 0
 
-    def test_digest_skips_inactive_subscribers(
+    @pytest.mark.asyncio
+    async def test_digest_skips_inactive_subscribers(
         self,
         digest_service,
         mock_subscriber_repo,
@@ -253,7 +257,7 @@ class TestDigestServiceFullFlow:
         # Run digest
         start = datetime.now() - timedelta(days=1)
         end = datetime.now() + timedelta(days=1)
-        digest_service.run_digest(start, end)
+        await digest_service.run_digest(start, end)
 
         # Only active subscriber should receive email
         assert len(mock_email_service.sent_emails) == 1
@@ -263,7 +267,8 @@ class TestDigestServiceFullFlow:
 class TestDigestErrorHandling:
     """Test error handling in digest service."""
 
-    def test_email_send_failure_records_failed_status(
+    @pytest.mark.asyncio
+    async def test_email_send_failure_records_failed_status(
         self,
         mock_event_repo,
         mock_subscriber_repo,
@@ -302,13 +307,14 @@ class TestDigestErrorHandling:
         # Run digest
         start = datetime.now() - timedelta(days=1)
         end = datetime.now() + timedelta(days=1)
-        digest_service.run_digest(start, end)
+        await digest_service.run_digest(start, end)
 
         # Verify run was recorded as FAILED
         assert len(mock_digest_run_repo.runs) == 1
         assert mock_digest_run_repo.runs[0].status == "FAILED"
 
-    def test_subscriber_with_no_subscriptions_skipped(
+    @pytest.mark.asyncio
+    async def test_subscriber_with_no_subscriptions_skipped(
         self, digest_service, mock_subscriber_repo, mock_event_repo, mock_email_service
     ):
         """Test that subscribers with no subscriptions don't get emails."""
@@ -330,12 +336,13 @@ class TestDigestErrorHandling:
         # Run digest
         start = datetime.now() - timedelta(days=1)
         end = datetime.now() + timedelta(days=1)
-        digest_service.run_digest(start, end)
+        await digest_service.run_digest(start, end)
 
         # No email should be sent
         assert len(mock_email_service.sent_emails) == 0
 
-    def test_no_matching_events_skipped(
+    @pytest.mark.asyncio
+    async def test_no_matching_events_skipped(
         self,
         digest_service,
         mock_subscriber_repo,
@@ -367,7 +374,7 @@ class TestDigestErrorHandling:
         # Run digest
         start = datetime.now() - timedelta(days=1)
         end = datetime.now() + timedelta(days=1)
-        digest_service.run_digest(start, end)
+        await digest_service.run_digest(start, end)
 
         # No email should be sent
         assert len(mock_email_service.sent_emails) == 0
@@ -376,7 +383,8 @@ class TestDigestErrorHandling:
 class TestDigestEmailContent:
     """Test the content of generated digest emails."""
 
-    def test_digest_email_format(
+    @pytest.mark.asyncio
+    async def test_digest_email_format(
         self,
         digest_service,
         mock_subscriber_repo,
@@ -407,7 +415,7 @@ class TestDigestEmailContent:
         # Run digest
         start = datetime.now() - timedelta(days=1)
         end = datetime.now() + timedelta(days=1)
-        digest_service.run_digest(start, end)
+        await digest_service.run_digest(start, end)
 
         # Verify email content
         email = mock_email_service.sent_emails[0]
@@ -419,7 +427,8 @@ class TestDigestEmailContent:
         assert "Regards," in email["body"]
         assert "Ballwork" in email["body"]
 
-    def test_digest_email_subject(
+    @pytest.mark.asyncio
+    async def test_digest_email_subject(
         self,
         digest_service,
         mock_subscriber_repo,
@@ -447,7 +456,7 @@ class TestDigestEmailContent:
         # Run digest
         start = datetime.now() - timedelta(days=1)
         end = datetime.now() + timedelta(days=1)
-        digest_service.run_digest(start, end)
+        await digest_service.run_digest(start, end)
 
         # Verify subject
         email = mock_email_service.sent_emails[0]

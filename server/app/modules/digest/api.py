@@ -1,5 +1,6 @@
 """Thin API layer for digest module."""
 
+from datetime import datetime
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -28,12 +29,19 @@ class SubscriptionCreateRequest(BaseModel):
     email: EmailStr | None = None
 
 
+class DigestRunRequest(BaseModel):
+    subscriber_id: int | None = None
+    subscriber_email: EmailStr | None = None
+    start: str  # ISO date string
+    end: str  # ISO date string
+
+
 class SubscriptionDeleteRequest(BaseModel):
     subscription_id: int
 
 
-@router.post("/digest/subscriber")
-def create_subscriber(
+@router.post("/subscriber")
+async def create_subscriber(
     payload: SubscriberCreateRequest,
     digest: Annotated[DigestService, Depends(get_digest_service)],
 ):
@@ -44,8 +52,8 @@ def create_subscriber(
     }
 
 
-@router.post("/digest/unsubscribe")
-def delete_subscriber(
+@router.post("/subscriber/delete")
+async def delete_subscriber(
     payload: SubscriberDeleteRequest,
     digest: Annotated[DigestService, Depends(get_digest_service)],
 ):
@@ -59,14 +67,13 @@ def delete_subscriber(
     return {
         "status": "success",
         "message": (
-            f"Subscriber with ID {payload.subscriber_id} unsubscribed "
-            "from the digest."
+            f"Subscriber with ID {payload.subscriber_id} unsubscribed from the digest."
         ),
     }
 
 
-@router.post("/digest/subscription/add")
-def create_subscription(
+@router.post("/subscription/add")
+async def create_subscription(
     payload: SubscriptionCreateRequest,
     digest: Annotated[DigestService, Depends(get_digest_service)],
 ):
@@ -101,8 +108,8 @@ def create_subscription(
     }
 
 
-@router.post("/digest/subscription/delete")
-def delete_subscription(
+@router.post("/subscription/delete")
+async def delete_subscription(
     payload: SubscriptionDeleteRequest,
     digest: Annotated[DigestService, Depends(get_digest_service)],
 ):
@@ -116,7 +123,44 @@ def delete_subscription(
     return {
         "status": "success",
         "message": (
-            f"Subscription {payload.subscription_id} unsubscribed "
-            "from the digest."
+            f"Subscription {payload.subscription_id} unsubscribed from the digest."
         ),
+    }
+
+
+@router.post("/run_job")
+async def run_job(
+    payload: DigestRunRequest,
+    digest: Annotated[DigestService, Depends(get_digest_service)],
+):
+    # check if there is email but no ID
+    if not payload.subscriber_id and payload.subscriber_email:
+        subscriber = digest.subscriber_repo.get_by_email(payload.subscriber_email)
+        if not subscriber:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Subscriber with email {payload.subscriber_email} not found.",
+            )
+        payload.subscriber_id = subscriber.id
+
+    if payload.subscriber_id is None:
+        raise HTTPException(
+            status_code=400,
+            detail="Either subscriber_id or subscriber_email must be provided.",
+        )
+
+    # parse string to datetime
+    start_date = datetime.fromisoformat(payload.start)
+    end_date = datetime.fromisoformat(payload.end)
+    await digest.run_single_digest(
+        subscriber_id=payload.subscriber_id, start=start_date, end=end_date
+    )
+    if not digest:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to run digest job for {payload.start} to {payload.end}.",
+        )
+    return {
+        "status": "success",
+        "message": f"Digest job run for {payload.start} to {payload.end}.",
     }

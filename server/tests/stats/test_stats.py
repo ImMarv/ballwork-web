@@ -3,14 +3,14 @@
 from datetime import date
 
 import pytest
-from app.modules.stats.models.dto.competition import Competition
-from app.modules.stats.models.dto.country import Country
-from app.modules.stats.models.dto.home_away import HomeAway
-from app.modules.stats.models.dto.player_profile import PlayerProfile
-from app.modules.stats.models.dto.player_statistics import PlayerStatistics
-from app.modules.stats.models.dto.team_stats import Team
-from app.modules.stats.models.dto.team_summary import TeamSummary
 from app.modules.stats.service import StatsService
+from app.modules.stats.repository.models.dto.competition import Competition
+from app.modules.stats.repository.models.dto.country import Country
+from app.modules.stats.repository.models.dto.home_away import HomeAway
+from app.modules.stats.repository.models.dto.player_profile import PlayerProfile
+from app.modules.stats.repository.models.dto.player_statistics import PlayerStatistics
+from app.modules.stats.repository.models.dto.team_stats import Team
+from app.modules.stats.repository.models.dto.team_summary import TeamSummary
 
 from .mock_provider import MockFailingProvider, MockWorkingProvider
 

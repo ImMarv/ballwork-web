@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, datetime
 
 from app.db_base.base import Base
-from sqlalchemy import Date, ForeignKey, Integer, String
+from sqlalchemy import Date, ForeignKey, Integer, String, DateTime, JSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
@@ -80,3 +80,13 @@ class PlayerSeason(Base):
     player: Mapped["Player"] = relationship(back_populates="player_seasons")
     team: Mapped["Team"] = relationship(back_populates="player_seasons")
     competition: Mapped["Competition"] = relationship(back_populates="player_seasons")
+
+class EntityCache(Base):
+    __tablename__ = "entity_cache"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    cache_key: Mapped[str] = mapped_column(String(64), unique=True, index=True)  # e.g., "PLAYER_12345"
+    entity_type: Mapped[str] = mapped_column(String(32)) # e.g., "PLAYER", "TEAM"
+    entity_id: Mapped[int] = mapped_column(Integer) # External ID
+    payload: Mapped[dict] = mapped_column(JSON)  # Store as JSON string
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
