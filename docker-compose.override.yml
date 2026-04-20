@@ -2,6 +2,23 @@
 # Auto-loaded by Docker Compose unless explicitly ignored
 # Adds the FastAPI app service and uses .env.dev for configuration
 services:
+  mock-api-service:
+    build:
+      context: ./mock-api-service
+      dockerfile: mock_api.dockerfile
+    container_name: ballwork-mock-api-dev
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      - PORT=8081
+      - ENV=development
+    command: >
+      sh -c "
+      cd /app &&
+      uvicorn app.main:app --host 0.0.0.0 --port 8081 --reload
+      "
+
   api:
     build:
       context: ./server
@@ -13,11 +30,15 @@ services:
     environment:
       - PORT=8080
       - ENV=development
+      - STATS_PROVIDER=mock_remote
+      - MOCK_API_BASE_URL=http://mock-api-service:8081
     env_file:
       - .env.dev
     depends_on:
       db:
         condition: service_healthy
+      mock-api-service:
+        condition: service_started
     volumes:
       - ./server/app:/app/app  # Hot reload for local development
     command: >

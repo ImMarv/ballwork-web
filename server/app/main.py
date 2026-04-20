@@ -9,7 +9,6 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import inspect, text
 from sqlalchemy.exc import SQLAlchemyError
 
-from .core.settings import settings
 from .db import SessionFactory, engine
 from .modules.digest.api import router as digest_router
 from .modules.digest.repository.implementations import (
@@ -17,14 +16,14 @@ from .modules.digest.repository.implementations import (
     SQLSubscriptionRepository,
 )
 from .modules.stats.api import router as stats_router
-from .modules.stats.providers.api_football import ApiFootballProvider
+from .modules.stats.providers.factory import create_stats_provider
 from .modules.stats.service import StatsService
 from .scheduler.jobs import ingest_due_subscriptions_job
 from .scheduler.scheduler import Scheduler
 
 LOGGER = logging.getLogger(__name__)
 
-provider = ApiFootballProvider(api_key=settings.API_FOOTBALL_KEY)
+provider = create_stats_provider()
 service = StatsService(provider=provider)
 scheduler = Scheduler()
 
@@ -51,11 +50,6 @@ def _digest_tables_exist() -> bool:
         "notification_event_digest",
     ]
     return all(inspector.has_table(table) for table in required_tables)
-
-
-def get_stats_service() -> StatsService:
-    return service
-
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):

@@ -7,6 +7,21 @@
 version: "3.9"
 
 services:
+  mock-api-service:
+    build:
+      context: ./mock-api-service
+      dockerfile: mock_api.dockerfile
+    container_name: ballwork-mock-api-staging
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      - PORT=8081
+      - ENV=staging
+    depends_on:
+      db:
+        condition: service_healthy
+
   api:
     build:
       context: ./server
@@ -18,8 +33,12 @@ services:
     environment:
       - PORT=8080
       - ENV=staging
+      - STATS_PROVIDER=mock_remote
+      - MOCK_API_BASE_URL=http://mock-api-service:8081
     env_file:
       - .env.staging
     depends_on:
       db:
         condition: service_healthy
+      mock-api-service:
+        condition: service_started

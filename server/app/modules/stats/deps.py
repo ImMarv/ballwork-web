@@ -5,14 +5,13 @@ In charge of wiring the local API with the provider
 from fastapi import Depends
 from sqlalchemy.orm import Session
 
-from ...core.settings import settings
 from ...db import get_db
-from .providers.api_football import ApiFootballProvider
+from .providers.factory import create_stats_provider
 from .repository.implementations import SQLStatsCacheRepository
 from .service import StatsService
 
 # Create single instances (application scope)
-_provider = ApiFootballProvider(api_key=settings.API_FOOTBALL_KEY)
+_provider = create_stats_provider()
 
 
 def get_stats_service(db: Session = Depends(get_db)) -> StatsService:  # noqa: B008
